@@ -21,8 +21,8 @@ from user import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users', user_views.UserView.as_view()),  # 这里需要将UserView类转换为as_view()方法
-    path('users/', include('user.urls')),
+    path('user', user_views.UserView.as_view()),  # 这里需要将UserView类转换为as_view()方法
+    path('user/', include('user.urls')),
     path('tokens/', include('usertoken.urls')),
     path('topics/', include('topic.urls')),
     path('post/', include('post.urls')),

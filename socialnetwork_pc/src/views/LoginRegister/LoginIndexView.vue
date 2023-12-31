@@ -66,29 +66,17 @@
   import router from '../../router';
   
   export default {
-      
-  
       setup(){
         const store = useStore();
         let username = ref('');
         let password = ref('');
-        let error_message = ref('账号或密码错误');
+        let error_message = ref('');
   
         const jwt_token = localStorage.getItem("jwt_token");
         if(jwt_token){
             store.commit("updateToken", jwt_token);
             store.dispatch("getinfo", {
                 success(){
-                  if(store.state.user.identity === "管理员"){
-                    router.push({name: "kucun_index" });
-                  }
-                  else if(store.state.user.identity === "采购员"){
-                    router.push({name: "caigou_index" });
-                  }
-                  else{
-                    router.push({name: "caiwub_index" });
-                  }
-                    
                   store.commit("updatePullingInfo", false);
                 },
                 error(){

@@ -9,7 +9,6 @@ from tools.logging_dec import logging_check
 
 #django提供了一个装饰器 method_decorator
 
-
 def get_type(str):
     ans = ''
     for i in reversed(str):
@@ -38,6 +37,14 @@ def users_views(request, account):
     user.avatar = avatar
     user.save()
     return JsonResponse({'code':200, 'url':'images/avatar/'+avatar.name})
+
+
+def getUserInfo(request):
+    result = {
+        'code': 10100,
+        'error': '返回信息正常'
+    }
+    return JsonResponse(result)
 
 
 # CBV
