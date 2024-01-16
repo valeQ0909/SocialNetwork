@@ -7,10 +7,8 @@ export default {
         return{
             id: "",
             username: "",
-            nickname:"",
             photo: "",
             token: "",
-            identity: "",
             is_login: false,
             pulling_info:true,   // 是否正在云端拉取信息
         }
@@ -26,9 +24,7 @@ export default {
         updateUser(state, user) {
             state.id = user.data.id;
             state.username = user.data.username;
-            state.nickname = user.data.nickname;
             state.photo = user.data.photo;
-            state.identity = user.data.identity;
             state.is_login = user.is_login;
         },
         updateToken(state, token) {
@@ -38,7 +34,6 @@ export default {
             state.id = "";
             state.username = "";
             state.photo = "";
-            state.identity = "";
             state.token = "";
             state.is_login = false;
         },
@@ -53,14 +48,13 @@ export default {
         getinfo(context, data){
             axios({
                 headers: {
-                  Authorization:"Bearer " + context.state.token,
+                  Authorization: context.state.token,
                 },
                 method: "GET",
-                url: context.rootState.backBaseUrl + "user/info/",
+                url: context.rootState.backBaseUrl + "/user/info/",
             }).then((resp)=>{
-                  console.log("resp: " + resp.data.error)
-
-                  if(resp.data.error_message === "success") {
+                  console.log("sotre getinfo resp: ", resp)
+                  if(resp.data.status_code === 0) {
                       context.commit("updateUser", {
                           ...resp,
                           is_login: true,
@@ -80,13 +74,13 @@ export default {
                     'Content-Type':'application/x-www-form-urlencoded'
                   },
                   method: "POST",
-                  url: context.rootState.backBaseUrl + "user/token/",
+                  url: context.rootState.backBaseUrl + "/user/login/",
                   data: {
                     'username': data.username,
                     'password': data.password,
                   },
                 }).then((resp) => {
-                    if (resp.data.error_message === "success") {
+                    if (resp.data.status_code === 0) {
                       localStorage.setItem("jwt_token", resp.data.token);
                       context.commit("updateToken", resp.data.token);
                       data.success(resp);

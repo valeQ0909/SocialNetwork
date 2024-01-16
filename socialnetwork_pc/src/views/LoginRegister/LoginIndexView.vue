@@ -63,28 +63,34 @@
   <script>
   import { useStore } from 'vuex'
   import { ref } from 'vue'
-  import router from '../../router';
+  import router from '../../router'
   
   export default {
       setup(){
-        const store = useStore();
+        const store = useStore(); // 使用vuex内数据
         let username = ref('');
         let password = ref('');
         let error_message = ref('');
   
+        // 获取jwt令牌
         const jwt_token = localStorage.getItem("jwt_token");
         if(jwt_token){
+            // 如果本地存有令牌
             store.commit("updateToken", jwt_token);
             store.dispatch("getinfo", {
                 success(){
+                  console.log("success!")
                   store.commit("updatePullingInfo", false);
+                  router.push({name:"home_index"});
+                  
                 },
                 error(){
-                    store.commit("updatePullingInfo", false);
+                  store.commit("updatePullingInfo", false);
                 }
             })
         }
         else {
+            // 如果本地没有令牌
             store.commit("updatePullingInfo", false);
         }
   
@@ -95,19 +101,12 @@
                   success() {
                       store.dispatch("getinfo", {
                           success() {
-                              if(store.state.user.identity === "管理员"){
-                                router.push({name: "kucun_index" });
-                              }
-                              else if(store.state.user.identity === "采购员"){
-                                router.push({name: "caigou_index" });
-                              }
-                              else{
-                                router.push({name: "caiwub_index" });
-                              }
-                              
+                            store.commit("updatePullingInfo", false);
+                            router.push({name:"home_index"});
                           },
                           error(){
-                          
+                            store.commit("updatePullingInfo", false);
+                            router.push({name:"home_index"});
                           }
                       })                    
                   },

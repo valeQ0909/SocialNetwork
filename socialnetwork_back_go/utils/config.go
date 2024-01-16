@@ -15,6 +15,7 @@ type Config struct {
 
 var _cfg *Config = nil
 
+// ParseConfig 解析配置环境
 func ParseConfig(path string) (*Config, error) {
 	file, err := os.Open(path)
 
