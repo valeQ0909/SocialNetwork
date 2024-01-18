@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="logo">
-            <img src="../assets/images/logo.png" alt="logo" />
+            <img src="../assets/images/logo.png"  @click="gohome" alt="logo" />
         </div>
         
         <div class="motto">
@@ -16,7 +16,7 @@
 
   
         <div class="avatar"  @mouseover="avatarshowshortcut" @mouseleave="avatarhideshortcut">
-            <img src="../assets/images/avatar.jpg" alt="avatar"/>
+            <img :src="avatar" alt="avatar"/>
         </div>
 
     </div>
@@ -24,14 +24,10 @@
     <!--头像功能区-->
     <div class="userpower" @mouseover="powershowshortcut" @mouseleave="powerhideshortcut" v-if="showpower">
        <div class="mypersonalpage selection">
-         <router-link replace to="/kucun">
-         <p>我的主页</p>
-         </router-link>
+         <router-link replace to="/sendpost"><p>写帖子</p></router-link>
        </div>
-       <div class="changeinformation selection">
-         <router-link replace to="/dinghuo">
-         <p>修改个人信息</p>
-         </router-link>
+       <div class="sendpost selection">
+         <router-link replace to="/userinfo"><p>我的主页</p></router-link>
        </div>
        <div class="logout selection" >
          <p @click="logout">退出登录</p>
@@ -42,7 +38,7 @@
   
 <script>
 console.log("乘风好去，长空万里，直下看山河。\n斫去桂婆娑，人道是、清光更多。\n                   -- 辛弃疾");
-import {ref, reactive } from "vue"
+import {ref, reactive, onMounted } from "vue"
 import { useStore } from 'vuex';
 import { useRouter } from "vue-router";
 
@@ -50,6 +46,9 @@ export default {
     setup(){
         const store = useStore();
         const router = useRouter();
+        let currentpage = ref();
+        let avatar = ref(); // 头像地址
+
 
         const theme1 = reactive({
             color: 'rgb(141, 139, 139)'
@@ -80,15 +79,23 @@ export default {
             showpower.value = false;
  
         };
-
+        const gohome = () =>{
+            router.push({
+                name: 'home_index',
+            });
+        }
         const logout = () => {
           store.dispatch("logout");
         }
+        const getAvatar = () =>{
+            avatar.value = localStorage.getItem("avatar");
+            if(avatar.value == null){ //如果本地没有存放头像地址
+                avatar.value = "http://127.0.0.1:3000/static/images/defaultavatar.jpg"
+            }
+        }
 
-        let identity = ref();
-        let currentpage = ref();
+
         setInterval(() => {
-            identity.value =  store.state.user.identity
             currentpage.value = router.currentRoute.value.name;
             if (currentpage.value === "kucun_index" || currentpage.value === "caigou_index" || currentpage.value === "caiwub_index"){
                 theme1.color = "white"
@@ -99,20 +106,26 @@ export default {
                 theme1.color = "rgb(141, 139, 139)"
             }
         }, 10);
-        
+
+        onMounted(()=>{
+            getAvatar()
+        })
+
         return {
             theme1,
             theme2,
             onpower,
             onavatar,
             showpower,
-            identity,
             currentpage,
+            avatar,
             avatarshowshortcut,
             avatarhideshortcut,
             powershowshortcut,
             powerhideshortcut,
+            gohome,
             logout,
+            getAvatar
        };
     },
 
@@ -159,8 +172,6 @@ a {
     height: 10vh;
     width: 100%;
     background-color: white;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
     position: fixed;
     top: 0;
     left: 0;
@@ -173,6 +184,7 @@ a {
     width: 5vh;
     margin-left: 5vw;
     margin-top: 2.5vh;
+    cursor: pointer;
 
 }
 .container .logo img{
@@ -220,6 +232,7 @@ a {
 .container .avatar img{
     width: 100%;
     height: 100%;
+    border-radius: 50px;
 }
 
 
@@ -227,7 +240,7 @@ a {
   background-color: #eaeaea;
   height: 150px;
   width: 100px;
-  z-index: 111;
+  z-index: 1001;
   position: fixed;
   right: 55px;
 }

@@ -4,9 +4,11 @@ import "log"
 
 // 映射字段名
 type TableUser struct {
-	Id       int64
-	Username string
-	Password string
+	Id        int64
+	Username  string
+	Password  string
+	Avatar    string
+	Signature string
 }
 
 // 表名映射

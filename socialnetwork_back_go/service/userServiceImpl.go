@@ -52,7 +52,7 @@ func (usi *UserServiceImpl) InsertUser(user *models.TableUser) bool {
 func (usi *UserServiceImpl) GetFmtUserById(id int64) (FmtUser, error) {
 	fmtUser := FmtUser{
 		Id:        0,
-		Name:      "",
+		UserName:  "",
 		Avatar:    config.DefaultAvatar,
 		Signature: config.DefaultSign,
 	}
@@ -63,7 +63,7 @@ func (usi *UserServiceImpl) GetFmtUserById(id int64) (FmtUser, error) {
 		log.Println("没有查到用户id为", id, "的用户")
 		return fmtUser, err
 	}
-	fmtUser.Name = user.Username
+	fmtUser.UserName = user.Username
 	fmtUser.Id = user.Id
 
 	return fmtUser, nil
@@ -73,7 +73,7 @@ func (usi *UserServiceImpl) GetFmtUserById(id int64) (FmtUser, error) {
 func (usi *UserServiceImpl) GetFmtUserByIdWithCurId(id int64, curId int64) (FmtUser, error) {
 	fmtUser := FmtUser{
 		Id:        0,
-		Name:      "",
+		UserName:  "",
 		Avatar:    config.DefaultAvatar,
 		Signature: config.DefaultSign,
 	}
@@ -84,8 +84,10 @@ func (usi *UserServiceImpl) GetFmtUserByIdWithCurId(id int64, curId int64) (FmtU
 		log.Println("没有查到用户id为", id, "的用户")
 		return fmtUser, err
 	}
-	fmtUser.Name = user.Username
+	fmtUser.UserName = user.Username
 	fmtUser.Id = user.Id
+	fmtUser.Avatar = user.Avatar
+	fmtUser.Signature = user.Signature
 
 	return fmtUser, nil
 }

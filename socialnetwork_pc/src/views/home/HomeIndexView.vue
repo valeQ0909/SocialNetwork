@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <!--左边部分：导航栏-->
-        <div class="page-left">
+        <div class="page_left">
             <ul>
                 <li>推荐</li>
                 <li>热榜</li>
@@ -15,12 +15,15 @@
         </div>
 
         <!--中间部分：帖子的容器-->
-        <div class="page-mid">
-
+        <div class="page_mid">
+            <Post></Post>
+            <Post></Post>
+            <Post></Post>
+            <Post></Post>
         </div>
 
         <!--右边部分，暂时不知道放什么东西-->
-        <div class="page-right">
+        <div class="page_right">
 
         </div>
     </div>
@@ -28,7 +31,13 @@
 </template>
 
 <script>
+import Post from '../../components/Post.vue';
+
 export default{
+    components:{
+        Post,
+    },
+
     setup(){
 
     }
@@ -40,22 +49,25 @@ export default{
 .container{
     width: 100%;
     height: 100%;
-    margin-top: 11vh;
+    margin-top: 10vh;
+    padding-top: 1vh;
+    background-color: rgb(242,243,245);
+    overflow:hidden; /*父盒子内有的任一级子盒子有浮动会导致父盒子无法高度自适应（即被子盒子撑开）*/
 }
-.page-left{
+.page_left{
     width: 10vw;
     height: 70vh;
     margin-left: 6vw;
-    border-width: 0.1px;
-    border-style: solid;
     position: fixed;
     top: 11vh;
     z-index: 1111;
+    background-color: white;
+    
 }
-.page-left ul{
+.page_left ul{
     padding-top: 20px;
 }
-.page-left ul li {
+.page_left ul li {
     padding-left: 10px;
     margin-top: 20px;
     font-size: 26px;
@@ -63,20 +75,18 @@ export default{
     cursor: pointer;  /*鼠标悬停变小手*/
     color:rgba(0, 0, 0,0.6);
 }
-.page-left ul li:hover{
+.page_left ul li:hover{
     background-color: rgb(209, 243, 249);
 }
 
-
-.page-mid {
+.page_mid{
     float: left;
     margin-left: 19vw;
-    height: 110vh;
+    height: 100%;
     width: 60vw;
-    background-color: aqua;
+    background-color: white;
 }
-
-.page-right{
+.page_right{
     float: left;
 }
 </style>

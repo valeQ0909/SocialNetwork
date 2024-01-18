@@ -34,39 +34,28 @@
   import axios from "axios";
   import router from '../../router'
   import { ref } from "vue";
-  
+  import { useStore } from 'vuex'
+
   export default {
-  
       setup(){
+        const store = useStore(); // 使用vuex内数据
         let username = ref("")
         let password_1 = ref("")
         let password_2 = ref("")
   
         // check 检查输入格式是否正确
-        const check = (str) => {
-            if(str.length < 3 || str.length >10){
-              alert("账号建议使用3-12位的阿拉伯数字")
-              return false;
-            }
-  
+        const check = () => {
             if (username.value === '' || password_1.value === '' || password_2.value === ''){
               alert("账号或密码不能为空")
               return false;
             }
-            
-            for(let i = 0; i < str.length; i ++)
-              if(str[i] > '9' || str[i] < '0'){
-                alert("账号建议使用3-12位的阿拉伯数字")
-                return false;
-              }
-  
             return true;
         }
   
         // register 
         const register = () => {
           let state = false;
-          state = check(username.value);
+          state = check();
      
           if(state){
             // 如果用户的输入格式正确
@@ -84,6 +73,9 @@
               }).then(response => {
                     console.log("response: ", response)
                     if(response.data.status_code == 0){
+                        store.commit("updateUser", response.data.user);
+                        localStorage.setItem("avatar", response.data.user.avatar); //保存用户头像
+                        store.commit("updateIsLogin", true)
                         localStorage.setItem("jwt_token", response.data.token); //保存令牌
                         router.push({name:"home_index"});
                     }

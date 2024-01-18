@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"socialnetwork_back_go/config"
 	"socialnetwork_back_go/models"
 	"socialnetwork_back_go/service"
 	"strconv"
@@ -16,8 +17,8 @@ type Response struct {
 
 type UserLoginResponse struct {
 	Response
-	UserId int64  `json:"user_id,omitempty"`
-	Token  string `json:"token"`
+	User  service.FmtUser `json:"user"`
+	Token string          `json:"token"`
 }
 
 type UserInfoResponse struct {
@@ -37,13 +38,10 @@ func Test(c *gin.Context) {
 func Register(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-	log.Println("context: ", c.Request)
-	log.Println("username: ", username, "   password: ", password)
 	usi := service.UserServiceImpl{}
 
 	// 查询该用户名是否被注册过
 	u := usi.GetUserByUsername(username)
-	log.Println("here")
 
 	if username == u.Username { // 如果该用户名被注册过
 		c.JSON(http.StatusOK, UserLoginResponse{
@@ -52,19 +50,26 @@ func Register(c *gin.Context) {
 	} else { // 如果没有注册过，就注册一个
 		log.Println("该用户名未被注册过")
 		newUser := models.TableUser{
-			Username: username,
-			Password: service.EnCoder(password), //对用户密码进行加密
+			Username:  username,
+			Password:  service.EnCoder(password), //对用户密码进行加密
+			Avatar:    config.DefaultAvatar,
+			Signature: config.DefaultSign,
 		}
 		if usi.InsertUser(&newUser) != true {
 			println("创建用户失败")
 		}
 		// 创建用户成功
-		log.Println("用户名称: ", username, " 创建成功")
 		u := usi.GetUserByUsername(username)
+		fmtUser := service.FmtUser{
+			Id:        u.Id,
+			UserName:  username,
+			Avatar:    u.Avatar,
+			Signature: u.Signature,
+		}
 		token := service.GenerateToken(username)
 		c.JSON(http.StatusOK, UserLoginResponse{
 			Response: Response{StatusCode: 0},
-			UserId:   u.Id,
+			User:     fmtUser,
 			Token:    token,
 		})
 	}
@@ -73,18 +78,25 @@ func Register(c *gin.Context) {
 // Login POST /socialnetwork/user/login/
 // 用户登录
 func Login(c *gin.Context) {
-	username := c.Query("username")
-	password := c.Query("password")
+	username := c.PostForm("username")
+	password := c.PostForm("password")
 	encoderPassword := service.EnCoder(password)
 
 	usi := service.UserServiceImpl{}
 	u := usi.GetUserByUsername(username)
 
-	if encoderPassword == u.Password {
+	if encoderPassword == u.Password { //如果密码正确
+		u := usi.GetUserByUsername(username)
+		fmtUser := service.FmtUser{
+			Id:        u.Id,
+			UserName:  username,
+			Avatar:    u.Avatar,
+			Signature: u.Signature,
+		}
 		token := service.GenerateToken(username)
 		c.JSON(http.StatusOK, UserLoginResponse{
 			Response: Response{StatusCode: 0},
-			UserId:   u.Id,
+			User:     fmtUser,
 			Token:    token,
 		})
 	} else {
@@ -104,7 +116,7 @@ func UserInfo(c *gin.Context) {
 	id, _ := strconv.ParseInt(userIdstr, 10, 64)
 
 	userService := service.UserServiceImpl{}
-	
+
 	if fmtUser, err := userService.GetFmtUserById(id); err != nil {
 		// 获取用户信息失败
 		c.JSON(http.StatusOK, UserInfoResponse{

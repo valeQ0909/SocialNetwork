@@ -46,9 +46,9 @@
             </div>
   
             <p>
-              <router-link id="signUp" replace to="/register" class="input"
-                >注册</router-link
-              >
+              <router-link id="signUp" replace to="/register" class="input">
+                注册
+              </router-link>
               <span>|</span>
               <a id="forget" href="/index/Retrieve" class="input">忘记密码？</a>
             </p>
@@ -79,10 +79,8 @@
             store.commit("updateToken", jwt_token);
             store.dispatch("getinfo", {
                 success(){
-                  console.log("success!")
                   store.commit("updatePullingInfo", false);
                   router.push({name:"home_index"});
-                  
                 },
                 error(){
                   store.commit("updatePullingInfo", false);
@@ -103,6 +101,7 @@
                           success() {
                             store.commit("updatePullingInfo", false);
                             router.push({name:"home_index"});
+                            location.reload(true)
                           },
                           error(){
                             store.commit("updatePullingInfo", false);

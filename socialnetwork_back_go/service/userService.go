@@ -18,7 +18,7 @@ type UserService interface {
 // FmtUser 最终封装后,controller返回的FmtUser结构体
 type FmtUser struct {
 	Id        int64  `json:"id,omitempty"`
-	Name      string `json:"name,omitempty"`
+	UserName  string `json:"username,omitempty"`
 	Avatar    string `json:"avatar,omitempty"`
 	Signature string `json:"signature,omitempty"`
 }

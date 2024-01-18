@@ -7,7 +7,8 @@ export default {
         return{
             id: "",
             username: "",
-            photo: "",
+            avatar: "",
+            signature: "",
             token: "",
             is_login: false,
             pulling_info:true,   // 是否正在云端拉取信息
@@ -22,10 +23,13 @@ export default {
     // 更新state中的数据的状态
     mutations:{
         updateUser(state, user) {
-            state.id = user.data.id;
-            state.username = user.data.username;
-            state.photo = user.data.photo;
-            state.is_login = user.is_login;
+            state.id = user.id;
+            state.username = user.username;
+            state.avatar = user.avatar;
+            state.signature = user.signature;
+        },
+        updateIsLogin(state, is_login){
+            state.is_login = is_login
         },
         updateToken(state, token) {
             state.token = token;
@@ -70,7 +74,7 @@ export default {
           // 登录
           login(context, data){
               axios({
-                  header:{
+                  headers:{
                     'Content-Type':'application/x-www-form-urlencoded'
                   },
                   method: "POST",
@@ -81,7 +85,10 @@ export default {
                   },
                 }).then((resp) => {
                     if (resp.data.status_code === 0) {
+                      console.log("resp: ", resp)
                       localStorage.setItem("jwt_token", resp.data.token);
+                      localStorage.setItem("avatar", resp.data.user.avatar);
+                      context.commit("updateUser", resp.data.user);
                       context.commit("updateToken", resp.data.token);
                       data.success(resp);
                     } else {
@@ -96,7 +103,7 @@ export default {
           logout(context) {
               localStorage.removeItem("jwt_token");
               context.commit("logout");
-              router.push({name: "login_index" });
+              router.push({name: "login_index"});
           },
     }
 

@@ -9,13 +9,28 @@ import (
 func InitRouter(r *gin.Engine) {
 	// public directory is used to serve static resources
 	r.Static("/static", "./static")
-
 	r.GET("/test/", controller.Test)
+
 	apiRouter := r.Group("/socialnetwork")
+
+	/*
+		用户
+	*/
 	//用户注册
 	apiRouter.POST("/user/register/", controller.Register)
 	//用户登录
 	apiRouter.POST("/user/login/", controller.Login)
 	//用户信息
 	apiRouter.GET("/user/info/", utils.Auth(), controller.UserInfo)
+
+	/*
+		帖子
+	*/
+	// 发布帖子
+	apiRouter.POST("/post/sendpost/", utils.Auth())
+	// 帖子列表
+	apiRouter.POST("/post/list/", utils.Auth())
+	// 获取帖子详情
+	apiRouter.POST("/post/postdetail/", utils.Auth())
+
 }
