@@ -13,25 +13,29 @@
             <div class="postdetail">
                 <div class="author">
                     <div class="zuozhe"><p>作者：</p></div>
-                    <img class="avatar" src="../../assets/images/cat_1.jpg"/>
-                    <div class="box-author"><p>vale</p></div>
-                    <div class="datetime"><p>2024-01-17</p></div>
+                    <img class="avatar" :src="avatar"/>
+                    <div class="box-author"><p>{{authorname}}</p></div>
+                    <div class="datetime"><p>{{publish_time}}</p></div>
                 </div>
-                <div class="info" v-html="post_content"></div>
+                <div class="info" v-html="post_html"></div>
             </div>
             <div class="comment">
-                <div class="box">评论 0</div>
+                <div class="box">评论 {{comment_count}}</div>
                 <div class="avatar-comment">
                     <img class="avatar" src="../../assets/images/cat_2.jpg"/>
                     <div class="comment-box">
-                        <textarea class="comment-area" :class="focus_state" @focus="comment_focus" @blur="lost_focus" placeholder="您可以在这里发表评论"></textarea>
-                        <div class="btn"><p>发送</p></div>
+                        <textarea class="comment-area" :class="focus_state" @focus="comment_focus" @blur="lost_focus" placeholder="您可以在这里发表评论" v-model="comment_text"></textarea>
+                        <div class="btn" @click="sendcomment"><p>发送</p></div>
                     </div>
                 </div>
-                <Comment></Comment>
-                <Comment></Comment>
-                <Comment></Comment>
-                <Comment></Comment>
+                <Comment v-for="comment in commentlist" :key="comment.id"
+                                                        :id="comment.id"
+                                                        :post_id="post_id"
+                                                        :commenter="comment.commenter"
+                                                        :comment_text="comment.comment_text"
+                                                        :publish_time="comment.fmt_publish_time"
+                >
+                </Comment>
             </div>
         </div>
 
@@ -39,14 +43,10 @@
         <div class="page-right">
             <div class="avatar-name">
                 <div class="avatar">
-                    <img src="../../assets/images/avatar.jpg"/>
+                    <img :src="avatar"/>
                 </div>
-                <div class="name">
-                    vale
-                </div>
-                <div class="signature">
-                    这个人很懒，什么都没有留下
-                </div>
+                <div class="name">{{authorname}}</div>
+                <div class="signature">{{signature}}</div>
             </div>
             <div class="number">
                 <div class="box">
@@ -73,8 +73,10 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import axios from "axios"
+import { ref,onMounted } from "vue";
 import  Comment  from "../../components/Comment.vue";
+import { useRouter } from "vue-router";
 
 export default{
     components: {
@@ -84,7 +86,24 @@ export default{
     setup(){
         let like = ref("like.png")  //关于动态切换图片的解决方案https://blog.csdn.net/tangshiyilang/article/details/134637734
         let focus_state = ref("pre_focus") //评论文本框是否聚焦
-        let post_content = '<p><span style="color: rgb(0, 0, 0); font-size: 19px; font-family: 华文仿宋;"><strong> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 我喜欢让你默默无言，仿佛你在远方。<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 仿佛你在悲叹，你蝴蝶的低语如鸽子的轻唤。<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 你从远方听着我，而我的声音接触不到你：<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 让我也默默无言于你的寂静无声。<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 并让我拿你的明亮如一盏灯，<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 简单如一个环的寂静无声和你倾谈。<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 你就像夜晚，默默无言且布满星星。<br> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 你的寂静无声是星星的寂静无声，一样地遥远和真实。</strong></span></p><p><img src="ll" alt="" data-href="" style=""/> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<img src="http://127.0.0.1:3000/static/images/background.jpg" alt="" data-href="" style="width: 293.75px;height: 165.22px;"/></p>'
+        const router = useRouter()
+        let post_id = ref()
+        post_id.value = router.currentRoute.value.query.id
+
+        // postdetail相关数据
+        let authorname = ref()
+        let avatar = ref()
+        let signature = ref()
+        let publish_time = ref()
+        let favorite_count = ref()
+        let comment_count = ref()
+        let post_html = ref()
+        //let category = ref()  以后再加这个功能
+
+        //comment相关数据、
+        let commentlist = ref()
+        let comment_text = ref()
+
 
         const likepost = () => {
             if(like.value == "like.png"){
@@ -101,13 +120,91 @@ export default{
             focus_state.value = "pre_focus"
         }
 
+        const getPostDetail = () => {
+            let token = localStorage.getItem("jwt_token")
+            // console.log("query_id: ", post_id)
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/post/postdetail/",
+                data: {
+                    'post_id': post_id.value,
+                }
+                }).then(resp => {
+                    authorname.value = resp.data.post.author.username
+                    avatar.value = resp.data.post.author.avatar
+                    signature.value = resp.data.post.author.signature
+                    publish_time.value = resp.data.post.fmt_publish_time
+                    post_html.value = resp.data.post.post_html
+                });
+        }
+
+        const getCommentList = () => {
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/comment/getcommentlist/",
+                data: {
+                    'post_id': post_id.value,
+                }
+                }).then(resp => {
+                    commentlist.value = resp.data.comment_list
+                });
+        }
+
+        const sendcomment = () => {
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/comment/sendcomment/",
+                data: {
+                    'post_id': post_id.value,
+                    'parent_comment_id': 0,
+                    'comment_text': comment_text.value,
+                }
+                }).then(resp => {
+                    comment_text.value = ""
+                    alert("发表评论成功！")
+                    console.log("send comment resp: ",resp.data);
+                });
+        }
+
+
+        onMounted(()=>{
+            getPostDetail()
+            getCommentList()
+        })
+
         return{
             like,
             focus_state,
-            post_content,
+            authorname,
+            avatar,
+            signature,
+            publish_time,
+            favorite_count,
+            comment_count,
+            post_html,
+            comment_text,
+            commentlist,
+            post_id,
             likepost,
             comment_focus,
             lost_focus,
+            getPostDetail,
+            sendcomment,
+            getCommentList,
         }
         
     }
@@ -266,15 +363,14 @@ export default{
     margin-right: 0.5vw;
     margin-bottom: 0.5vw;
     border-radius: 5px;
-    background-color: rgb(171,205,255);
+    background-color: rgb(30,128,255);
     color: white;
     cursor: pointer;
 }
-.comment .comments{
-    width: 56vw;
-    height: 20vh;
-    margin-top: 10vh;
+.comment .avatar-comment .comment-box .btn:hover{
+    background-color: rgb(171,205,255);
 }
+
 .page-right{
     width: 20vw;
     height: 30vh;

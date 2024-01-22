@@ -7,6 +7,7 @@ import PostdetailIndexView from "../views/PostDetail/PostdetailIndexView"
 import PersonalPageIndexView from "../views/PersonalPage/PersonalPageIndexView"
 import UserInfoIndexView from "../views/UserInfo/UserInfoIndexView"
 import SendpostIndexView from "../views/SendPost/SendpostIndexView"
+import ChangePersonalInfoIndexView from  "../views/ChangePersonalInfo/ChangePersonalInfoIndexView"
 
 const routes = [
     {
@@ -53,6 +54,14 @@ const routes = [
       path:"/personalpage", // 个人信息详情页
       name:"personalpage_index",
       component: PersonalPageIndexView,
+      meta:{
+         requestAuth: true,
+      }
+    },
+    {
+      path:"/changepersonalinfo",
+      name:"changepersonalinfo_index",
+      component:ChangePersonalInfoIndexView,
       meta:{
          requestAuth: true,
       }

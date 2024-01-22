@@ -3,31 +3,29 @@
         <!--头像、名称区-->
         <div class="avatar_name">
             <div class="avatar"  >
-                <img src="../assets/images/cat_1.jpg" alt="avatar"  @click.stop="personalpage" />
+                <img :src="author.avatar" alt="avatar"  @click.stop="personalpage" />
             </div>
             <div class="name">
-                vale
+                {{author.username}}
             </div>
             <div class="datetime">
-                2024 1 17
+                {{fmt_publish_time}}
             </div>
         </div>
 
         <!--文章摘要区-->
-        <div class="summary">
-            heapArena是mheap向操作系统申请内存的单位(64MB)。每个heapArena包含8192(2的13次方)个页，大小为8192 * 8KB = 64MB。heapArena记录了页到mspan的映射。GC时，通过地址偏移找到页很方便，但找到其所属的mspan不容易，因此需要通过这个映射信息进行辅助。
-        </div>
+        <div class="summary">{{post_text}}</div>
 
         <!--浏览量、点赞数功能区-->
         <div class="power">
             <div class="like">
                 <img :src="require('../assets/images/' + like)" @click.stop="likepost"/>
-                <div class="text">2.2k</div>
+                <div class="text">{{favorite_count}}</div>
             </div>
 
             <div class="comment">
                 <img src="../assets/images/comment.png"/>
-                <div class="text">2.2k</div>
+                <div class="text">{{comment_count}}</div>
             </div>
 
             <div class="watched">
@@ -44,18 +42,28 @@
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 export default{
-    setup(){
+    props:['id','author','category','comment_count','favorite_count','post_text','fmt_publish_time'],
+    setup(props){
         const router = useRouter();
         let like = ref("like.png")  //关于动态切换图片的解决方案https://blog.csdn.net/tangshiyilang/article/details/134637734
 
         const postdetail = () =>{
+            console.log("post id: ", props.id)
             router.push({
                 name: 'postdetail_index',
+                query:{
+                    id: props.id,
+                }
             });
+            
         }
         const personalpage = () => {
+            console.log("username: ", props.author.username)
             router.push({
                 name: 'userinfo_index',
+                query:{
+                    username: props.author.username,
+                }
             });
         }
         const likepost = () => {

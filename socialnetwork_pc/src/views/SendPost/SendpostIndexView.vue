@@ -70,9 +70,7 @@ export default{
         // ----------vale的代码部分--------------
         let post_text = ""
         const sendpost = () =>{
-            console.log("postcontent: ", valueHtml.value)
             post_text = editorRef.value.getText()
-            console.log("posttext: ", post_text)
             let token = localStorage.getItem("jwt_token")
             axios({
                 headers:{
@@ -80,7 +78,7 @@ export default{
                   'Content-Type':'application/x-www-form-urlencoded'
                 },
                 method: 'POST',
-                url: "http://127.0.0.1:3000/socialnetwork/post/sendpost",
+                url: "http://127.0.0.1:3000/socialnetwork/post/sendpost/",
                 data: {              
                   'post_html': valueHtml.value,
                   'post_text': post_text,

@@ -26,16 +26,39 @@ func (usi *UserServiceImpl) GetUserList() []models.TableUser {
 }
 
 // GetUserByUsername 通过name获取User对象
-func (usi *UserServiceImpl) GetUserByUsername(name string) models.TableUser {
+func (usi *UserServiceImpl) GetUserByUsername(name string) (models.TableUser, error) {
 	tableUser, err := models.GetTableUserByUsername(name)
 	if err != nil {
 		log.Println("Error:", err.Error())
 		log.Println("User Not Found")
 		log.Println("tableUser: ", tableUser)
-		return tableUser
+		return tableUser, err
 	}
 	log.Println("Query User Success")
-	return tableUser
+	return tableUser, nil
+}
+
+// GetFmtUserByUsername 通过name获取FmtUser对象
+func (usi *UserServiceImpl) GetFmtUserByUsername(name string) (FmtUser, error) {
+	fmtUser := FmtUser{
+		Id:        0,
+		UserName:  "",
+		Avatar:    config.DefaultAvatar,
+		Signature: config.DefaultSign,
+	}
+	user, err := models.GetTableUserByUsername(name)
+
+	if err != nil {
+		log.Println("产生错误:", err.Error())
+		log.Println("没有查到用户name为", name, "的用户")
+		return fmtUser, err
+	}
+	fmtUser.Id = user.Id
+	fmtUser.UserName = user.Username
+	fmtUser.Avatar = user.Avatar
+	fmtUser.Signature = user.Signature
+
+	return fmtUser, nil
 }
 
 // InsertUser 创建一个User对象
@@ -63,8 +86,10 @@ func (usi *UserServiceImpl) GetFmtUserById(id int64) (FmtUser, error) {
 		log.Println("没有查到用户id为", id, "的用户")
 		return fmtUser, err
 	}
-	fmtUser.UserName = user.Username
 	fmtUser.Id = user.Id
+	fmtUser.UserName = user.Username
+	fmtUser.Avatar = user.Avatar
+	fmtUser.Signature = user.Signature
 
 	return fmtUser, nil
 }
@@ -92,9 +117,15 @@ func (usi *UserServiceImpl) GetFmtUserByIdWithCurId(id int64, curId int64) (FmtU
 	return fmtUser, nil
 }
 
+// UpdateAvatar 更新用户头像
+func (usi *UserServiceImpl) UpdateAvatar(userId int64, avatar string) error {
+	err := models.UpdateAvatar(userId, avatar)
+	return err
+}
+
 // GenerateToken 根据username生成一个token
 func GenerateToken(username string) string {
-	u := UserService.GetUserByUsername(new(UserServiceImpl), username)
+	u, _ := UserService.GetUserByUsername(new(UserServiceImpl), username)
 	token := NewToken(u)
 	log.Println("token: ", token)
 	return token

@@ -54,7 +54,10 @@ export default {
                 headers: {
                   Authorization: context.state.token,
                 },
-                method: "GET",
+                method: "POST",
+                data:{
+                    "username": context.state.username
+                },
                 url: context.rootState.backBaseUrl + "/user/info/",
             }).then((resp)=>{
                   console.log("sotre getinfo resp: ", resp)

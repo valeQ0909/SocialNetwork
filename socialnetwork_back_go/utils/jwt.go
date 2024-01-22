@@ -35,7 +35,7 @@ func Auth() gin.HandlerFunc {
 				StatusMsg:  "Token Error",
 			})
 		}
-		c.Set("userId", token.Id)
+		c.Set("tokenId", token.Id)
 		c.Next()
 	}
 }

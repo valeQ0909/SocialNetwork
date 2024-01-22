@@ -16,10 +16,16 @@
 
         <!--中间部分：帖子的容器-->
         <div class="page_mid">
-            <Post></Post>
-            <Post></Post>
-            <Post></Post>
-            <Post></Post>
+            <Post v-for="post in postlist" :key="post.id"
+                                           :id="post.id"
+                                           :author="post.author"
+                                           :category="post.category"
+                                           :comment_count="post.comment_count"
+                                           :favorite_count="post.favorite_count"
+                                           :post_text="post.post_text"
+                                           :fmt_publish_time="post.fmt_publish_time"
+            >
+            </Post>
         </div>
 
         <!--右边部分，暂时不知道放什么东西-->
@@ -32,14 +38,45 @@
 
 <script>
 import Post from '../../components/Post.vue';
-
+import axios from "axios";
+import {onMounted, ref} from "vue"
 export default{
     components:{
         Post,
     },
 
     setup(){
+        let postlist = ref([])
 
+        const getpostlist = () =>{
+            let date = new Date();
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                   Authorization: token,
+                  'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/post/feed/",
+                data: {              
+                  'category': "广场",
+                  'last_time': date.getDate()
+                }                
+              }).then(response => {
+                    postlist.value = response.data.post_list
+                    console.log("feed response: ", response)
+                    console.log("postlist: ", postlist.value)
+                });
+        }
+
+        onMounted(()=>{
+            getpostlist()
+        })
+
+        return{
+            postlist,
+            getpostlist
+        }
     }
 }
 

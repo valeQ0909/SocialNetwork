@@ -27,7 +27,10 @@
          <router-link replace to="/sendpost"><p>写帖子</p></router-link>
        </div>
        <div class="sendpost selection">
-         <router-link replace to="/userinfo"><p>我的主页</p></router-link>
+         <router-link replace to="/personalpage"><p>我的主页</p></router-link>
+       </div>
+       <div class="changepersonalinfo selection">
+         <router-link replace to="/changepersonalinfo"><p>修改个人信息</p></router-link>
        </div>
        <div class="logout selection" >
          <p @click="logout">退出登录</p>
@@ -254,7 +257,7 @@ a {
  margin-top: 20px;
 }
 
-.userpower .changeinformation{
+.userpower .changepersonalinfo{
   margin-top: 10px;
 }
 

@@ -8,12 +8,12 @@ import (
 
 // TablePost 映射字段名
 type TablePost struct {
-	Id         int64     `json:"id"`
-	AuthorId   int64     `json:"author_id"`
-	Category   string    `json:"category"`
-	PostHtml   string    `json:"post_html"`
-	PostText   string    `json:"post_text"`
-	PublicTime time.Time `json:"public_time"`
+	Id          int64     `json:"id"`
+	AuthorId    int64     `json:"author_id"`
+	Category    string    `json:"category"`
+	PostHtml    string    `json:"post_html"`
+	PostText    string    `json:"post_text"`
+	PublishTime time.Time `json:"publish_time"`
 }
 
 // TableName 表名映射
@@ -24,14 +24,12 @@ func (u TablePost) TableName() string {
 // GetPostsByLastTime
 // 依据一个时间，来获取这个时间之前的一些帖子
 func GetPostsByLastTime(lastTime time.Time) ([]TablePost, error) {
-	posts := make([]TablePost, config.VideoCount)
-	result := DB.Where("publish_time<?", lastTime).Order("publish_time desc").Limit(config.VideoCount).Find(&posts)
+	posts := make([]TablePost, config.PostCount)
+	result := DB.Where("publish_time<?", lastTime).Order("publish_time desc").Limit(config.PostCount).Find(&posts)
 	if result.Error != nil {
-		log.Println("查询videos有错误", result.Error)
+		log.Println("查询posts有错误", result.Error)
 		return posts, result.Error
 	}
-	log.Println("查询到视频：", result)
-	log.Println("查询到videos：", posts[0])
 	return posts, nil
 }
 
@@ -58,20 +56,20 @@ func GetPostByPostId(videoId int64) (TablePost, error) {
 	return post, nil
 }
 
-// InsertPost 创建一条帖子
-func InsertPost(authorId int64, category string, postHtml string, postText string) (bool, error) {
+// InsertTablePost 创建一条帖子
+func InsertTablePost(authorId int64, category string, postHtml string, postText string) error {
 	newPost := TablePost{
-		AuthorId:   authorId,
-		Category:   category,
-		PostHtml:   postHtml,
-		PostText:   postText,
-		PublicTime: time.Now(),
+		AuthorId:    authorId,
+		Category:    category,
+		PostHtml:    postHtml,
+		PostText:    postText,
+		PublishTime: time.Now(),
 	}
 	result := DB.Create(&newPost)
 	if result.Error != nil {
-		return false, result.Error
+		return result.Error
 	}
-	return true, nil
+	return nil
 }
 
 // GetPostIdsByUserId

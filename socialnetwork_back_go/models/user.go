@@ -54,3 +54,21 @@ func InsertTableUser(tableUser *TableUser) bool {
 	}
 	return true
 }
+
+func UpdateAvatar(userid int64, filePath string) error {
+	err := DB.Model(&TableUser{}).Where("id = ?", userid).Update("avatar", filePath).Error
+	if err != nil {
+		log.Println("UpdateAvatar更新用户头像失败", err.Error())
+		return err
+	}
+	return nil
+}
+
+func UpdatePersonalInfo(userid int64, username string, signature string) error {
+	err := DB.Model(&TableUser{}).Where("id = ?", userid).Updates(TableUser{Username: username, Signature: signature}).Error
+	if err != nil {
+		log.Println("UpdatePersonalInfo更新用户名称和签名失败", err.Error())
+		return err
+	}
+	return nil
+}
