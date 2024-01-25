@@ -14,11 +14,14 @@
             </span>
         </div>
 
-  
         <div class="avatar"  @mouseover="avatarshowshortcut" @mouseleave="avatarhideshortcut">
             <img :src="avatar" alt="avatar"/>
         </div>
 
+        <div class="ai-home">
+            <img :src="aiImgstr"  @click="go_ai_home" alt="" />
+        </div>
+  
     </div>
 
     <!--头像功能区-->
@@ -51,6 +54,10 @@ export default {
         const router = useRouter();
         let currentpage = ref();
         let avatar = ref(); // 头像地址
+
+        // vale的AI小屋
+        let aiImgstr = ref()
+        aiImgstr.value = "http://127.0.0.1:3000/static/images/ai.png"
 
 
         const theme1 = reactive({
@@ -85,6 +92,11 @@ export default {
         const gohome = () =>{
             router.push({
                 name: 'home_index',
+            });
+        }
+        const go_ai_home = () =>{
+            router.push({
+                name: 'aihome_index',
             });
         }
         const logout = () => {
@@ -122,26 +134,22 @@ export default {
             showpower,
             currentpage,
             avatar,
+            aiImgstr,
             avatarshowshortcut,
             avatarhideshortcut,
             powershowshortcut,
             powerhideshortcut,
             gohome,
             logout,
-            getAvatar
+            getAvatar,
+            go_ai_home,
        };
     },
 
     data() {
       return {
         motto: [
-            "我见青山多妩媚，料青山见我应如是。",
-            "不恨古人吾不见，恨古人不见吾狂耳。",
-            "我最怜君中宵舞，道“男儿到死心如铁”。看试手，补天裂。",
-            "吾庐小，在龙蛇影外，风雨声中。",
-            "乘风好去，长空万里，直下看山河。",
-            "斫去桂婆娑，人道是、清光更多。",
-            "鸿鹄一再高举，天地睹方圆。",
+            "广告位招租！！！！！"
         ],
         n: 0,
       };
@@ -223,22 +231,34 @@ a {
 .container .item:hover{
     color: white;
 }
-
-.container .avatar{
+/*头像区*/
+.avatar{
     margin-top: 1vh;
     margin-right: 5vw;
     float: right;
     height: 8vh;
     width: 8vh;
 }
-
-.container .avatar img{
+.avatar img{
     width: 100%;
     height: 100%;
     border-radius: 50px;
 }
+/*vale的ai小屋*/
+.ai-home{
+    float: right;
+    height: 5vh;
+    width: 5vh;
+    margin-top: 3vh;
+    margin-right: 2vw;
+    cursor: pointer;
+}
+.ai-home img{
+    width: 100%;
+    height: 100%;
+}
 
-
+/*头像功能区 */
 .userpower{
   background-color: #eaeaea;
   height: 150px;

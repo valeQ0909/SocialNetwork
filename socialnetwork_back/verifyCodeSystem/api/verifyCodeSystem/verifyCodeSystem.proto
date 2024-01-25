@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package api.verifyCodeSystem;
+
+// 生成的go代码所在的包
+option go_package = "verifyCodeSystem/api/verifyCodeSystem;verifyCodeSystem";
+option java_multiple_files = true;
+option java_package = "api.verifyCodeSystem";
+
+// 定义VerifyCodeSystem服务
+service VerifyCodeSystem {
+	rpc GetVerifyCodeSystem (GetVerifyCodeSystemRequest) returns (GetVerifyCodeSystemReply);
+}
+
+enum TYPE {
+	DEFAULT = 0;
+	DIGIT = 1;
+	LETTER = 2;
+	MIXED = 3;
+}
+// 接口请求参数结构
+message GetVerifyCodeSystemRequest {
+	// 验证码长度
+	int32  length = 1;
+	// 验证码类型
+	TYPE type = 2;
+}
+// 接口返回值结构
+message GetVerifyCodeSystemReply {
+	string code = 1;
+}

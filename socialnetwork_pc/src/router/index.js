@@ -8,6 +8,7 @@ import PersonalPageIndexView from "../views/PersonalPage/PersonalPageIndexView"
 import UserInfoIndexView from "../views/UserInfo/UserInfoIndexView"
 import SendpostIndexView from "../views/SendPost/SendpostIndexView"
 import ChangePersonalInfoIndexView from  "../views/ChangePersonalInfo/ChangePersonalInfoIndexView"
+import AiHomeIndexView from "../views/AiHome/AiHomeIndexView"
 
 const routes = [
     {
@@ -67,9 +68,17 @@ const routes = [
       }
     },
     {
-      path:"/userinfo",
-      name:"userinfo_index",
+      path: "/userinfo",
+      name: "userinfo_index",
       component: UserInfoIndexView,
+      meta:{
+         requestAuth: false,
+      }
+    },
+    {
+      path: "/aihome",
+      name: "aihome_index",
+      component: AiHomeIndexView,
       meta:{
          requestAuth: false,
       }
