@@ -32,6 +32,7 @@
                                                         :id="comment.id"
                                                         :post_id="post_id"
                                                         :commenter="comment.commenter"
+                                                        :reply_count="comment.reply_count"
                                                         :comment_text="comment.comment_text"
                                                         :publish_time="comment.fmt_publish_time"
                 >
@@ -48,23 +49,24 @@
                 <div class="name">{{authorname}}</div>
                 <div class="signature">{{signature}}</div>
             </div>
+
             <div class="number">
                 <div class="box">
-                    <div class="num"><p>315</p></div>
+                    <div class="num"><p>{{post_cnt}}</p></div>
                     <div class="text"><p>贴子</p></div>
                 </div>
                 <div class="box">
-                    <div class="num"><p>7.3k</p></div>
+                    <div class="num"><p>{{like_cnt}}</p></div>
                     <div class="text"><p>喜欢</p></div>
                 </div>
                 <div class="box">
-                    <div class="num"><p>6.4k</p></div>
+                    <div class="num"><p>{{follower_cnt}}</p></div>
                     <div class="text"><p>粉丝</p></div>
                 </div>
-
             </div>
-            <div class="follow-message">
-                <div class="follow"><p>关注</p></div>
+
+            <div class="follow-message" v-show="!is_me">
+                <div :class="follow_state" @click="followPoster"><p>{{p_follow}}</p></div>
                 <div class="message"><p>私信</p></div>
             </div>
 
@@ -91,6 +93,7 @@ export default{
         post_id.value = router.currentRoute.value.query.id
 
         // postdetail相关数据
+        let author_id = ref()
         let authorname = ref()
         let avatar = ref()
         let signature = ref()
@@ -104,14 +107,24 @@ export default{
         let commentlist = ref()
         let comment_text = ref()
 
+        // 关注相关数据
+        let is_me = ref()
+        let is_follow = ref()
+        let p_follow = ref()
+        p_follow.value = "关注"
+        let follow_actionType = 0
+        let follow_state = ref()
 
-        const likepost = () => {
-            if(like.value == "like.png"){
-                like.value = "liked.png"
-            }else{
-                like.value = "like.png"
-            }
-        }
+        // 点赞相关数据
+        let is_like = ref()
+        let like_actionType = 0
+
+
+        //用户info相关数据
+        let post_cnt = ref()
+        let like_cnt = ref()
+        let follower_cnt = ref()
+
 
         const comment_focus = () =>{
             focus_state.value = "after_focus"
@@ -120,9 +133,71 @@ export default{
             focus_state.value = "pre_focus"
         }
 
+        const likepost = () => {
+            if(is_like.value==true){
+                like_actionType = 1
+            } else {
+                like_actionType = 0
+            }
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/favorite/action/",
+                data: {
+                    'post_id': post_id.value,
+                    'action_type': like_actionType,
+                }
+                }).then(resp => {
+                    console.log("resp: ", resp)
+                    if(like.value == "like.png"){
+                        like.value = "liked.png"
+                    }else{
+                        like.value = "like.png"
+                    }
+                });
+        }
+
+        const followPoster = () => {
+            if(is_follow.value==true){
+                follow_actionType = 1
+            } else {
+                follow_actionType = 0
+            }
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/follow/action/",
+                data: {
+                    "user_id": author_id.value,
+                    "action_type": follow_actionType,
+                }
+                }).then(resp => {
+                    console.log("followPoster resp: ", resp)
+                    if(resp.data.status_code == 0){
+                        if(is_follow.value){ //如果之前是关注状态，现在就是未关注状态
+                            follow_state.value = "follow"
+                            p_follow.value = "关注"
+                            is_follow.value = false
+                        } else { //如果之前是未关注状态，现在就是关状态
+                            follow_state.value = "followed"
+                            p_follow.value = "已关注"
+                            is_follow.value = true
+                        }
+                    }
+                });
+        }
+
+        //获取帖子的详细数据
         const getPostDetail = () => {
             let token = localStorage.getItem("jwt_token")
-            // console.log("query_id: ", post_id)
             axios({
                 headers:{
                     Authorization: token,
@@ -134,11 +209,36 @@ export default{
                     'post_id': post_id.value,
                 }
                 }).then(resp => {
+                    console.log("postDetail: ", resp)
+                    author_id.value = resp.data.post.author_id
                     authorname.value = resp.data.post.author.username
                     avatar.value = resp.data.post.author.avatar
                     signature.value = resp.data.post.author.signature
                     publish_time.value = resp.data.post.fmt_publish_time
+                    post_cnt.value = resp.data.post.author.post_cnt
+                    like_cnt.value = resp.data.post.author.like_cnt
+                    follower_cnt.value = resp.data.post.author.follower_cnt
+
                     post_html.value = resp.data.post.post_html
+                    // 点赞相关
+                    if(resp.data.post.author.is_me == true){  // 这里json解析过后会自动变成bool类型
+                        is_me.value = true
+                    } else {
+                        is_me.value = false
+                    }
+                    is_like.value = resp.data.post.is_favorite
+                    if(resp.data.post.is_favorite == true){ // 如果喜欢过该帖子，则like图标显示红心
+                        like.value = "liked.png"
+                    }
+                    // 关注相关
+                    is_follow.value = resp.data.post.author.is_follow
+                    if(resp.data.post.author.is_follow == true){ // 如果关注过发帖人，则显示已关注
+                        p_follow.value = "已关注"
+                        follow_state.value = "followed"
+                    } else {
+                        p_follow.value = "关注"
+                        follow_state.value = "follow"
+                    }
                 });
         }
 
@@ -155,6 +255,7 @@ export default{
                     'post_id': post_id.value,
                 }
                 }).then(resp => {
+                    console.log("commentlist: ",resp.data.comment_list)
                     commentlist.value = resp.data.comment_list
                 });
         }
@@ -189,6 +290,7 @@ export default{
         return{
             like,
             focus_state,
+            author_id,
             authorname,
             avatar,
             signature,
@@ -199,7 +301,16 @@ export default{
             comment_text,
             commentlist,
             post_id,
+            is_me,
+            is_like,
+            is_follow,
+            p_follow,
+            follow_state,
+            post_cnt,
+            like_cnt,
+            follower_cnt,
             likepost,
+            followPoster,
             comment_focus,
             lost_focus,
             getPostDetail,
@@ -373,11 +484,11 @@ export default{
 
 .page-right{
     width: 20vw;
-    height: 30vh;
     border-radius: 2px;
     position: fixed;
     top: 11vh;
     right: 2vw;
+    padding-bottom: 5vh;
     z-index: 1000;
     background-color: white;
 }
@@ -448,8 +559,25 @@ export default{
     color: white;
     background-color: rgb(30,128,255);
 }
+.follow-message .followed{
+    float: left;
+    width: 8vw;
+    height: 2.5vw;
+    margin-left: 1vw;
+    font-size: 16px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: rgb(122, 180, 255);
+    background-color: rgb(216, 233, 255);
+}
 .follow-message .follow:hover{
-    background-color: rgb(122, 175, 245);
+    background-color: rgb(122, 180, 255);
+}
+.follow-message .followed:hover{
+    background-color: rgb(207, 227, 254);
 }
 .follow-message .message{
     float: left;

@@ -26,10 +26,10 @@
 
     <!--头像功能区-->
     <div class="userpower" @mouseover="powershowshortcut" @mouseleave="powerhideshortcut" v-if="showpower">
-       <div class="mypersonalpage selection">
+       <div class="writepost selection">
          <router-link replace to="/sendpost"><p>写帖子</p></router-link>
        </div>
-       <div class="sendpost selection">
+       <div class="mypersonalpage selection">
          <router-link replace to="/personalpage"><p>我的主页</p></router-link>
        </div>
        <div class="changepersonalinfo selection">
@@ -270,17 +270,18 @@ a {
 
 .userpower p{
   text-align: center;
+  color: rgb(0, 0, 0);
   font-size: 14px;
 }
-
+.userpower .writepost{
+    margin-top: 20px;
+} 
 .userpower .mypersonalpage{
- margin-top: 20px;
+ margin-top: 10px;
 }
-
 .userpower .changepersonalinfo{
   margin-top: 10px;
 }
-
 .userpower .logout{
   cursor: pointer;  /*鼠标悬停变小手*/
   margin-top: 10px;

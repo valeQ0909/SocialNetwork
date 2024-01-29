@@ -23,9 +23,9 @@ func (TableComment) TableName() string {
 	return "comments"
 }
 
-// Count
+// CommentCount
 // 1、使用Post id 查询Comment数量
-func Count(postId int64) (int64, error) {
+func CommentCount(postId int64) (int64, error) {
 	var count int64
 	// 数据库中查询评论数量
 	err := DB.Model(TableComment{}).Where(map[string]interface{}{"post_id": postId, "cancel": 0}).Count(&count).Error

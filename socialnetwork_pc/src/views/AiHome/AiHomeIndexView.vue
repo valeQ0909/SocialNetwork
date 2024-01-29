@@ -38,7 +38,7 @@ export default{
         let errorStr = ref()
         let buffer = ref()
         let imgStr = ref()
-        imgStr.value = "http://127.0.0.1:3000/static/images/avatar.jpg"
+        imgStr.value = "http://127.0.0.1:3000/static/images/aihome_default.png"
 
         // 识别任务
         let category = ref()

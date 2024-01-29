@@ -20,7 +20,7 @@
         <div class="power">
             <div class="like">
                 <img :src="require('../assets/images/' + like)" @click.stop="likepost"/>
-                <div class="text">{{favorite_count}}</div>
+                <div class="text">{{like_count}}</div>
             </div>
 
             <div class="comment">
@@ -30,7 +30,7 @@
 
             <div class="watched">
                 <img src="../assets/images/watched.png"/>
-                <div class="text">2.2k</div>
+                <div class="text">{{watch_count}}</div>
             </div>
 
         </div>
@@ -39,26 +39,44 @@
 </template>
 
 <script>
+import axios from "axios";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 export default{
-    props:['id','author','category','comment_count','favorite_count','post_text','fmt_publish_time'],
+    props:['id','author','category','comment_count','favorite_count','post_text','fmt_publish_time', 'is_favorite',"watch_count"],  //这里id就是post_id
     setup(props){
         const router = useRouter();
         let like = ref("like.png")  //关于动态切换图片的解决方案https://blog.csdn.net/tangshiyilang/article/details/134637734
+        let like_count = ref() // 因为props存在单向数据流的特性，需要单独设置本地的data来处理点赞记数这个属性
+
+        let like_actionType = 0
+
 
         const postdetail = () =>{
-            console.log("post id: ", props.id)
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                   Authorization: token,
+                  'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/watch/action/",
+                data: {              
+                  'post_id': props.id,
+                }                
+              }).then(resp => {
+                    console.log("resp: ", resp)
+              });
+
             router.push({
                 name: 'postdetail_index',
                 query:{
                     id: props.id,
                 }
             });
-            
         }
+
         const personalpage = () => {
-            console.log("username: ", props.author.username)
             router.push({
                 name: 'userinfo_index',
                 query:{
@@ -66,17 +84,51 @@ export default{
                 }
             });
         }
+
         const likepost = () => {
-            if(like.value == "like.png"){
-                like.value = "liked.png"
-            }else{
-                like.value = "like.png"
+            if(props.is_favorite == true){
+                like_actionType = 1
+            } else {
+                like_actionType = 0
             }
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/favorite/action/",
+                data: {
+                    'post_id': props.id,
+                    'action_type': like_actionType,
+                }
+                }).then(resp => {
+                    if(resp.data.status_code == 0){
+                        if(like.value == "like.png"){
+                            like_count.value ++
+                            like.value = "liked.png"
+                        }else{
+                            like.value = "like.png"
+                            like_count.value --
+                        }
+                    }
+                });
         }
 
+        onMounted(()=>{
+            like_count.value = props.favorite_count
+
+            if(props.is_favorite == true){
+                like.value = "liked.png"
+            } else {
+                like.value = "like.png"
+            }
+        })
 
         return{
             like,
+            like_count,
             postdetail,
             personalpage,
             likepost

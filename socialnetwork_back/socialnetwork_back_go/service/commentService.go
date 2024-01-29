@@ -6,8 +6,9 @@ import "socialnetwork_back_go/models"
 // 发表评论-使用的结构体-service层引用models层↑的Comment。
 type FmtComment struct {
 	models.TableComment
-	Commenter      FmtUser `json:"commenter,omitempty"`
-	FmtPublishTime string  `json:"fmt_publish_time,omitempty"`
+	Commenter      FmtUser `json:"commenter"`
+	ReplyCount     int64   `json:"reply_count"`
+	FmtPublishTime string  `json:"fmt_publish_time"`
 }
 
 type CommentService interface {

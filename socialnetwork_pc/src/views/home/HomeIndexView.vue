@@ -3,14 +3,15 @@
         <!--左边部分：导航栏-->
         <div class="page_left">
             <ul>
-                <li>推荐</li>
-                <li>热榜</li>
-                <li>广场</li>
-                <li>树洞</li>
-                <li>二手市场</li>
-                <li>失物招领</li>
-                <li>计算机</li>
-                <li>招聘</li>
+                <li :class="category[0]" @click="chose_category(0)">推荐</li>
+                <li :class="category[1]" @click="chose_category(1)">热榜</li>
+                <li :class="category[2]" @click="chose_category(2)">关注</li>
+                <li :class="category[3]" @click="chose_category(3)">广场</li>
+                <li :class="category[4]" @click="chose_category(4)">树洞</li>
+                <li :class="category[5]" @click="chose_category(5)">二手市场</li>
+                <li :class="category[6]" @click="chose_category(6)">失物招领</li>
+                <li :class="category[7]" @click="chose_category(7)">计算机</li>
+                <li :class="category[8]" @click="chose_category(8)">招聘</li>
             </ul>
         </div>
 
@@ -24,6 +25,8 @@
                                            :favorite_count="post.favorite_count"
                                            :post_text="post.post_text"
                                            :fmt_publish_time="post.fmt_publish_time"
+                                           :is_favorite="post.is_favorite"
+                                           :watch_count="post.watch_count"
             >
             </Post>
         </div>
@@ -47,6 +50,10 @@ export default{
 
     setup(){
         let postlist = ref([])
+        let category_page = ref()
+
+        // 导航栏属性相关
+        let category = ref(["chose_category","","","","","","","",""])
 
         const getpostlist = () =>{
             let date = new Date();
@@ -66,22 +73,52 @@ export default{
                     postlist.value = response.data.post_list
                     console.log("feed response: ", response)
                     console.log("postlist: ", postlist.value)
-                });
+            });
+        }
+
+        // 导航栏属性相关
+        const chose_category = (num) =>{
+            let categoryPage = ["推荐", "热榜", "关注","广场", "树洞", "二手市场", "失物招领", "计算机", "招聘"]
+            for(let i = 0; i < 9; i ++){
+                category.value[i] = ""
+            }
+            category.value[num] = "chose_category"
+            category_page.value = categoryPage[num]
+
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                   Authorization: token,
+                  'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/post/feed/",
+                data: {              
+                  'category': category_page.value,
+                }                
+              }).then(resp => {
+                    postlist.value = resp.data.post_list
+                    console.log("change category response: ", resp.data)
+            });
         }
 
         onMounted(()=>{
+            category_page.value = "推荐"
             getpostlist()
         })
 
         return{
             postlist,
-            getpostlist
+            category,
+            category_page,
+            getpostlist,
+            chose_category,
         }
     }
 }
 
 </script>
-
+ 
 <style scoped>
 .container{
     width: 100%;
@@ -93,7 +130,7 @@ export default{
 }
 .page_left{
     width: 10vw;
-    height: 70vh;
+    height: 76vh;
     margin-left: 6vw;
     position: fixed;
     top: 11vh;
@@ -110,10 +147,14 @@ export default{
     font-size: 26px;
     border-radius: 10px;
     cursor: pointer;  /*鼠标悬停变小手*/
-    color:rgba(0, 0, 0,0.6);
+    color:rgba(0, 0, 0, 0.6);
 }
 .page_left ul li:hover{
-    background-color: rgb(209, 243, 249);
+    background-color: rgb(247,248,250);
+}
+.page_left ul .chose_category{
+    color: rgb(30,128,255);
+    background-color: rgb(234,242,255);
 }
 
 .page_mid{

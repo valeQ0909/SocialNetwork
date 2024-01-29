@@ -30,19 +30,15 @@ func (psi *PostServiceImpl) Feed(lastTime time.Time, userId int64) ([]FmtPost, e
 	return postsList, nil
 }
 
-// GetPostByPostId 传入帖子id获取对应的视频对象
-// 施工ing
-func (psi *PostServiceImpl) GetPostByPostId(postId int64, userId int64) (FmtPost, error) {
-	//初始化video对象
+// GetFmtPostByPostId 传入帖子id获取对应的FmtPost对象
+func (psi *PostServiceImpl) GetFmtPostByPostId(postId int64, userId int64) (FmtPost, error) {
 	fmtPost := FmtPost{}
-
 	//从数据库中查询数据，如果查询不到数据，就直接失败返回，后续流程就不需要执行了
 	post, err := models.GetPostByPostId(postId)
 	if err != nil {
-		log.Printf("方法models.GetPostByPostId(postId) 失败：%v", err)
+		log.Println("方法GetFmtPostByPostId失败")
 		return fmtPost, err
 	}
-
 	//插入从数据库中查到的数据
 	psi.createFmtPost(&fmtPost, &post, userId)
 	return fmtPost, nil
@@ -73,6 +69,12 @@ func (psi *PostServiceImpl) GetPostList(userId int64, curId int64) ([]FmtPost, e
 	return fmtPostsList, nil
 }
 
+// PostCount 获取具体用户帖子的数量
+func (psi *PostServiceImpl) PostCount(userId int64) (int64, error) {
+	postIds, _ := models.GetPostIdList(userId)
+	return int64(len(postIds)), nil
+}
+
 // 将Post格式化为FmtPost
 func (psi *PostServiceImpl) refactorPosts(result *[]FmtPost, data *[]models.TablePost, userId int64) error {
 	for _, temp := range *data {
@@ -87,6 +89,9 @@ func (psi *PostServiceImpl) refactorPosts(result *[]FmtPost, data *[]models.Tabl
 // 将fmtPost进行组装，添加想要的信息,插入从数据库中查到的数据
 func (psi *PostServiceImpl) createFmtPost(fmtPost *FmtPost, post *models.TablePost, userId int64) {
 	usi := UserServiceImpl{}
+	lsi := LikeServiceImpl{}
+	csi := CommentServiceImpl{}
+	wsi := WatchServiceImpl{}
 
 	fmtPost.TablePost = *post
 	fmtPost.FmtPublishTime = post.PublishTime.Format("2006-01-02 15:04:05") // 输出: 2019-04-30 14:43:26
@@ -106,11 +111,15 @@ func (psi *PostServiceImpl) createFmtPost(fmtPost *FmtPost, post *models.TablePo
 	var err error
 	fmtPost.Author, err = usi.GetFmtUserByIdWithCurId(post.AuthorId, userId)
 	if err != nil {
-		log.Printf("方法videoService.GetUserByIdWithCurId(data.AuthorId, userId) 失败：%v", err)
-	} else {
-		log.Printf("方法videoService.GetUserByIdWithCurId(data.AuthorId, userId) 成功")
+		log.Println("方法createFmtPost失败")
 	}
-	fmtPost.FavoriteCount = 11
-	fmtPost.CommentCount = 22
-	fmtPost.IsFavorite = false
+
+	// 查询帖子点赞总数
+	fmtPost.FavoriteCount, _ = lsi.PostFavouriteCount(post.Id)
+	// 查询当前用户是否点赞过这条帖子
+	fmtPost.IsFavorite, _ = lsi.IsFavourite(post.Id, userId)
+	// 查询帖子的评论数量
+	fmtPost.CommentCount, _ = csi.CountByPostId(post.Id)
+	// 查询帖子的浏览数量
+	fmtPost.WatchCount, _ = wsi.PostWatchCnt(post.Id)
 }

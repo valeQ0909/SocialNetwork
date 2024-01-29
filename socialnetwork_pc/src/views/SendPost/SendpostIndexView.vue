@@ -23,6 +23,20 @@
                 />
             </div>
             <div class="power">
+                <div class="select">
+                    <input class="category" type="text" v-model="category" readonly="readonly" @click="chooseOption">
+                    <div class="option" v-show="option_state">
+                        <ul>
+                            <li @click="choseCategory(0)">广场</li>
+                            <li @click="choseCategory(1)">树洞</li>
+                            <li @click="choseCategory(2)">二手市场</li>
+                            <li @click="choseCategory(3)">失物招领</li>
+                            <li @click="choseCategory(4)">计算机</li>
+                            <li @click="choseCategory(5)">招聘</li>
+                        </ul>
+                    </div>
+                </div>
+
                 <div class="send" @click="sendpost"><p>发布</p></div>
                 <div class="save"><p>保存</p></div>
             </div>
@@ -82,7 +96,7 @@ export default{
                 data: {              
                   'post_html': valueHtml.value,
                   'post_text': post_text,
-                  'category': "广场"
+                  'category': category.value
                 }                
               }).then(response => {
                     if(response.data.status_code == 0){
@@ -99,16 +113,39 @@ export default{
             editor.handleTab = () => editor.insertText('    ')
 
         })
+
+        // 下拉框相关
+        let category = ref("广场")
+        let option_state = ref(false)
+        let category_dict = ["广场", "树洞", "二手市场", "失物招领", "计算机", "招聘"]
+        const chooseOption = () =>{
+            if(option_state.value == false){
+                option_state.value = true
+            } else {
+                option_state.value = false
+            }
+        }
         
+        const choseCategory = (num) =>{
+            category.value = category_dict[num]
+            option_state.value = false
+        }
+
+
+
         return {
-        post_text,
-        editorRef,
-        valueHtml,
-        mode: 'default', // 或 'simple'
-        toolbarConfig,
-        editorConfig,
-        handleCreated,
-        sendpost,
+            post_text,
+            editorRef,
+            valueHtml,
+            mode: 'default', // 或 'simple'
+            toolbarConfig,
+            editorConfig,
+            option_state,
+            category,
+            handleCreated,
+            sendpost,
+            chooseOption,
+            choseCategory,
         };
   
     }
@@ -121,9 +158,9 @@ export default{
     height: 100%;
     margin-top: 10vh;
     padding-top: 1vh;
-    padding-bottom: 10vh;
+    padding-bottom: 25vh;
     background-color: rgb(242,243,245);
-    overflow:hidden; /*父盒子内有的任一级子盒子有浮动会导致父盒子无法高度自适应（即被子盒子撑开）*/
+    overflow:hidden; /* 父盒子内有的任一级子盒子有浮动会导致父盒子无法高度自适应（即被子盒子撑开）*/
 }
 .page-left{  /*之后会在这里放头像啥的 */
     width: 10vw;
@@ -144,6 +181,39 @@ export default{
     width: 100%;
     margin-top: 3vh;
 }
+.power .select{
+    height: 3vw;
+    float: left;
+    margin-left: 2vw;
+}
+.power .category{
+    display: flex;
+    cursor: pointer;
+    outline: none;
+    width: 8vw;
+    height: 3vw;
+    font-size: 18px;
+    border-color: rgba(0, 0,0, 0.1);
+    border-radius: 5px;
+    padding-left: 1vh;
+} 
+.power.option {
+    width: 180px;
+    border-style: solid;
+    border-color: #e2b5b5;
+ }
+.power .option li {
+    padding-left: 1vh;
+    height: 2vw;
+    font-size: 18px;
+    list-style: none;
+    cursor: pointer;
+    background-color: white;
+}
+.power .option li:hover{
+    background-color: rgb(171,205,255);
+} 
+
 .power .send{
     float: right;
     display: flex;

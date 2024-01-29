@@ -11,22 +11,18 @@
             </div>
             <div class="number">
                 <div class="box">
-                    <div class="num"><p>315</p></div>
+                    <div class="num"><p>{{post_cnt}}</p></div>
                     <div class="text"><p>贴子</p></div>
                 </div>
                 <div class="box">
-                    <div class="num"><p>7.3k</p></div>
+                    <div class="num"><p>{{like_cnt}}</p></div>
                     <div class="text"><p>喜欢</p></div>
                 </div>
                 <div class="box">
-                    <div class="num"><p>6.4k</p></div>
+                    <div class="num"><p>{{follower_cnt}}</p></div>
                     <div class="text"><p>粉丝</p></div>
                 </div>
 
-            </div>
-            <div class="follow-message">
-                <div class="follow"><p>关注</p></div>
-                <div class="message"><p>私信</p></div>
             </div>
         </div>
 
@@ -40,6 +36,7 @@
                                            :favorite_count="post.favorite_count"
                                            :post_text="post.post_text"
                                            :fmt_publish_time="post.fmt_publish_time"
+                                           :is_favorite="post.is_favorite"
             >
             </Post>
         </div>
@@ -67,6 +64,9 @@ export default{
         let avatar = ref()
         let username = ref()
         let signature = ref()
+        let post_cnt = ref()
+        let like_cnt = ref()
+        let follower_cnt = ref()
 
         const getUserInfo = () => {
             let token = localStorage.getItem("jwt_token")
@@ -77,12 +77,14 @@ export default{
                 },
                 method: 'GET',
                 url: "http://127.0.0.1:3000/socialnetwork/user/token/",       
-            }).then(response => {
-                    avatar.value = response.data.user.avatar
-                    signature.value = response.data.user.signature
-                    username.value = response.data.user.username
-                    ///let token = localStorage.getItem("jwt_token")
-                    console.log("username: ", username.value)
+            }).then(resp => {
+                    console.log("resp: ", resp)
+                    avatar.value = resp.data.user.avatar
+                    signature.value = resp.data.user.signature
+                    username.value = resp.data.user.username
+                    post_cnt.value = resp.data.user.post_cnt
+                    like_cnt.value = resp.data.user.like_cnt
+                    follower_cnt.value = resp.data.user.follower_cnt
                     axios({
                         headers:{
                             Authorization: token,
@@ -100,13 +102,10 @@ export default{
             });
         }
 
-        const getpostlist = () =>{
 
-        }
 
         onMounted(()=>{
             getUserInfo()
-            getpostlist()
         })
         onUpdated(()=>{
            
@@ -117,8 +116,10 @@ export default{
             avatar,
             signature,
             username,
+            post_cnt,
+            like_cnt,
+            follower_cnt,
             getUserInfo,
-            getpostlist
         }
     }
 }
@@ -135,8 +136,8 @@ export default{
 }
 .page-left{
     width: 20vw;
-    height: 30vh;
     margin-left: 1vw;
+    padding-bottom: 6vh;
     position: fixed;
     top: 11vh;
     z-index: 1111;

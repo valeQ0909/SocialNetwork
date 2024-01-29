@@ -20,7 +20,7 @@
             </div>
             <div class="pinglun" @click="reply">
                 <img src="../assets/images/comment.png" >
-                <div class="text"><p>评论</p></div>
+                <div class="text"><p>{{reply_count}}</p></div>
             </div>
         </div>
 
@@ -44,7 +44,7 @@ import axios from "axios"
 import {onMounted, ref} from "vue"
 import Reply from "./Reply.vue"
 export default{
-    props:["id","post_id", "commenter", "publish_time", "comment_text"],  // 这里id是comment的id
+    props:["id","post_id", "commenter", "publish_time", "comment_text", "reply_count"],  // 这里id是comment的id
     components:{
         Reply
     },

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="ALL" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="799c5f4d-ed85-400f-8e42-cb538611e8a4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/controller/CommentController.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/controller/CommentController.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/controller/PostController.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/controller/PostController.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/router/router.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/router/router.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/service/commentService.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/service/commentService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/service/commentServiceImpl.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/service/commentServiceImpl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/service/postService.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/service/postService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/service/postServiceImpl.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/service/postServiceImpl.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/socialnetwork_back_go/service/userService.go" beforeDir="false" afterPath="$PROJECT_DIR$/socialnetwork_back_go/service/userService.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../socialnetwork_pc/src/components/Comment.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../socialnetwork_pc/src/components/Comment.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../socialnetwork_pc/src/views/AiHome/AiHomeIndexView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../socialnetwork_pc/src/views/AiHome/AiHomeIndexView.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../socialnetwork_pc/src/views/PostDetail/PostdetailIndexView.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../socialnetwork_pc/src/views/PostDetail/PostdetailIndexView.vue" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="GOROOT" url="file://G:/GoLangSdk/go" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2bX1uLKPsutLzlSmPAM4rKHNO3V" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.go.formatter.settings.were.checked": "true",
+    "RunOnceActivity.go.migrated.go.modules.settings": "true",
+    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "go.import.settings.migrated": "true",
+    "go.sdk.automatically.set": "true",
+    "last_opened_file_path": "C:/Users/HP"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VgoProject">
+    <settings-migrated>true</settings-migrated>
+  </component>
+</project>

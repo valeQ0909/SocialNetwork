@@ -59,7 +59,7 @@ func CommentList(c *gin.Context) {
 	log.Println("postId: ", postId)
 	csi := new(service.CommentServiceImpl)
 
-	list, err := csi.GetCommentList(postId, userId)
+	list, err := csi.GetFmtCommentList(postId, userId)
 	log.Println("comment list: ", list)
 	if err != nil {
 		c.JSON(http.StatusOK, Response{
@@ -86,7 +86,7 @@ func ReplyList(c *gin.Context) {
 	parentCommentId, _ := strconv.ParseInt(parentCommentIdstr, 10, 64)
 	csi := new(service.CommentServiceImpl)
 
-	list, err := csi.GetReplyList(postId, parentCommentId, userId)
+	list, err := csi.GetFmtReplyList(postId, parentCommentId, userId)
 	log.Println("reply list: ", list)
 	if err != nil {
 		c.JSON(http.StatusOK, Response{

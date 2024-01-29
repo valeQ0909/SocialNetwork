@@ -72,9 +72,9 @@ func InsertTablePost(authorId int64, category string, postHtml string, postText 
 	return nil
 }
 
-// GetPostIdsByUserId
+// GetPostIdList
 // 通过作者id来查询发布的帖子id切片集合
-func GetPostIdsByUserId(authorId int64) ([]int64, error) {
+func GetPostIdList(authorId int64) ([]int64, error) {
 	var id []int64
 	//通过pluck来获得单独的切片
 	result := DB.Model(&TablePost{}).Where("author_id", authorId).Pluck("id", &id)

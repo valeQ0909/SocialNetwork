@@ -43,6 +43,30 @@ func InitRouter(r *gin.Engine) {
 	apiRouter.POST("/post/postdetail/", utils.Auth(), controller.PostDetail)
 
 	/*
+		浏览
+	*/
+	apiRouter.POST("/watch/action/", utils.Auth(), controller.WatchAction)
+	/*
+		点赞
+	*/
+	//赞操作
+	apiRouter.POST("/favorite/action/", utils.Auth(), controller.LikeAction)
+	//喜欢列表
+	apiRouter.GET("/favorite/list/", utils.Auth(), controller.GetLikePostList)
+
+	/*
+		关注
+	*/
+	apiRouter.POST("/follow/action/", utils.Auth(), controller.FollowAction)
+	//用户关注列表
+	apiRouter.GET("/follow/followinglist/", utils.Auth(), controller.GetFollowingList)
+	//用户粉丝列表
+	apiRouter.GET("/follow/followerlist/", utils.Auth(), controller.GetFollowerList)
+	//用户好友列表
+	// 施工ing
+	apiRouter.GET("/friend/list/", utils.Auth())
+
+	/*
 		评论
 	*/
 	//评论操作

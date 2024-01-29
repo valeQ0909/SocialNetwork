@@ -23,10 +23,15 @@ func Feed(c *gin.Context) {
 	tokenId, _ := c.Get("tokenId") //返回的这个any类型我不是很懂，留着以后再学
 	tokenIdstr := tokenId.(string) // 这个any必须转换未string，我也不是很懂，留着以后再学
 	userId, _ := strconv.ParseInt(tokenIdstr, 10, 64)
+
+	category := c.PostForm("category") //返回的这个any类型我不是很懂，留着以后再学
+	log.Println("category: ", category)
+
 	lastTime := time.Now()
 
 	psi := service.PostServiceImpl{}
 	feed, err := psi.Feed(lastTime, userId)
+
 	if err != nil {
 		log.Printf("方法postService.Feed(lastTime, userId) 失败：%v", err)
 		c.JSON(http.StatusOK, PostsListResponse{
@@ -108,7 +113,13 @@ func PostDetail(c *gin.Context) {
 	userId, _ := strconv.ParseInt(tokenIdstr, 10, 64)
 
 	psi := service.PostServiceImpl{}
-	post, err := psi.GetPostByPostId(postId, userId)
+	post, err := psi.GetFmtPostByPostId(postId, userId)
+	if post.AuthorId == userId {
+		post.Author.IsMe = true
+	} else {
+		log.Println("post.Author: ", post.Author.IsMe)
+		post.Author.IsMe = false
+	}
 
 	if err != nil {
 		c.JSON(http.StatusOK, Response{
@@ -117,7 +128,7 @@ func PostDetail(c *gin.Context) {
 		})
 		return
 	}
-	log.Println("成功查询到帖子")
+
 	c.JSON(http.StatusOK, PostResponse{
 		Response: Response{StatusCode: 0, StatusMsg: "查询帖子成功"},
 		Post:     post,

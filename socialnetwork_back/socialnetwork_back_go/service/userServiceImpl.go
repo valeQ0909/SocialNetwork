@@ -73,6 +73,10 @@ func (usi *UserServiceImpl) InsertUser(user *models.TableUser) bool {
 
 // GetFmtUserById 通过Id获取格式化的FmtUser对象
 func (usi *UserServiceImpl) GetFmtUserById(id int64) (FmtUser, error) {
+	psi := PostServiceImpl{}
+	lsi := LikeServiceImpl{}
+	fsi := FollowServiceImpl{}
+
 	fmtUser := FmtUser{
 		Id:        0,
 		UserName:  "",
@@ -90,12 +94,21 @@ func (usi *UserServiceImpl) GetFmtUserById(id int64) (FmtUser, error) {
 	fmtUser.UserName = user.Username
 	fmtUser.Avatar = user.Avatar
 	fmtUser.Signature = user.Signature
+
+	fmtUser.PostCnt, _ = psi.PostCount(user.Id)
+	fmtUser.LikeCnt, _ = lsi.TotalFavourite(user.Id)
+	fmtUser.FollowerCnt, _ = fsi.GetTotalFollowersCnt(user.Id)
+	fmtUser.FollowingCnt, _ = fsi.GetTotalFollowingsCnt(user.Id)
 
 	return fmtUser, nil
 }
 
 // GetFmtUserByIdWithCurId 已登录(curID)情况下,根据user_id获得User对象
-func (usi *UserServiceImpl) GetFmtUserByIdWithCurId(id int64, curId int64) (FmtUser, error) {
+func (usi *UserServiceImpl) GetFmtUserByIdWithCurId(userId int64, curId int64) (FmtUser, error) {
+	psi := PostServiceImpl{}
+	lsi := LikeServiceImpl{}
+	fsi := FollowServiceImpl{}
+
 	fmtUser := FmtUser{
 		Id:        0,
 		UserName:  "",
@@ -103,16 +116,22 @@ func (usi *UserServiceImpl) GetFmtUserByIdWithCurId(id int64, curId int64) (FmtU
 		Signature: config.DefaultSign,
 	}
 
-	user, err := models.GetTableUserById(id)
+	user, err := models.GetTableUserById(userId)
 	if err != nil {
 		log.Println("产生错误:", err.Error())
-		log.Println("没有查到用户id为", id, "的用户")
+		log.Println("没有查到用户id为", userId, "的用户")
 		return fmtUser, err
 	}
 	fmtUser.UserName = user.Username
 	fmtUser.Id = user.Id
 	fmtUser.Avatar = user.Avatar
 	fmtUser.Signature = user.Signature
+
+	fmtUser.IsFollow, _ = fsi.IsFollow(userId, curId)
+	fmtUser.PostCnt, _ = psi.PostCount(user.Id)
+	fmtUser.LikeCnt, _ = lsi.TotalFavourite(user.Id)
+	fmtUser.FollowerCnt, _ = fsi.GetTotalFollowersCnt(user.Id)
+	fmtUser.FollowingCnt, _ = fsi.GetTotalFollowingsCnt(user.Id)
 
 	return fmtUser, nil
 }
