@@ -45,6 +45,7 @@ func main() {
 	grpcServer := grpc.NewServer()
 	// 在grpc服务端中注册服务
 	pb.RegisterSayHelloServer(grpcServer, &server{})
+
 	//启动服务
 	err = grpcServer.Serve(listen)
 	if err != nil {

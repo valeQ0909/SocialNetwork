@@ -8,12 +8,12 @@ import (
 
 // TablePost 映射字段名
 type TablePost struct {
-	Id          int64     `json:"id"`
-	AuthorId    int64     `json:"author_id"`
-	Category    string    `json:"category"`
-	PostHtml    string    `json:"post_html"`
-	PostText    string    `json:"post_text"`
-	PublishTime time.Time `json:"publish_time"`
+	Id           int64     `json:"id"`
+	AuthorId     int64     `json:"author_id"`
+	Category     string    `json:"category"`
+	PostMarkdown string    `json:"post_markdown"`
+	PostText     string    `json:"post_text"`
+	PublishTime  time.Time `json:"publish_time"`
 }
 
 // TableName 表名映射
@@ -33,11 +33,23 @@ func GetPostsByLastTime(lastTime time.Time) ([]TablePost, error) {
 	return posts, nil
 }
 
+// GetPostsDescByCategory
+// 根据帖子种类获取时间倒序的帖子列表
+func GetPostsDescByCategory(category string) ([]TablePost, error) {
+	posts := make([]TablePost, config.PostCount)
+	result := DB.Where("category", category).Order("publish_time desc").Limit(config.PostCount).Find(&posts)
+	if result.Error != nil {
+		log.Println("查询posts有错误", result.Error)
+		return posts, result.Error
+	}
+	return posts, nil
+}
+
 // GetPostsByAuthorId
 // 根据作者的id来查询对应数据库数据，返回Post切片
 func GetPostsByAuthorId(authorId int64) ([]TablePost, error) {
 	var post []TablePost
-	result := DB.Where(&TablePost{AuthorId: authorId}).Find(&post)
+	result := DB.Where(&TablePost{AuthorId: authorId}).Order("publish_time desc").Find(&post)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -45,7 +57,7 @@ func GetPostsByAuthorId(authorId int64) ([]TablePost, error) {
 }
 
 // GetPostByPostId
-// 依据VideoId来获得视频信息
+// 依据PostId来获得帖子信息
 func GetPostByPostId(videoId int64) (TablePost, error) {
 	var post TablePost
 	post.Id = videoId
@@ -57,13 +69,13 @@ func GetPostByPostId(videoId int64) (TablePost, error) {
 }
 
 // InsertTablePost 创建一条帖子
-func InsertTablePost(authorId int64, category string, postHtml string, postText string) error {
+func InsertTablePost(authorId int64, category string, postMarkdown string, postText string) error {
 	newPost := TablePost{
-		AuthorId:    authorId,
-		Category:    category,
-		PostHtml:    postHtml,
-		PostText:    postText,
-		PublishTime: time.Now(),
+		AuthorId:     authorId,
+		Category:     category,
+		PostMarkdown: postMarkdown,
+		PostText:     postText,
+		PublishTime:  time.Now(),
 	}
 	result := DB.Create(&newPost)
 	if result.Error != nil {

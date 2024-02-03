@@ -122,7 +122,7 @@ func Login(c *gin.Context) {
 // UserInfo Post /socialnetwork/user/info/
 // 获取用户信息
 func UserInfo(c *gin.Context) {
-	username := c.PostForm("username") //返回的这个any类型我不是很懂，留着以后再学
+	username := c.PostForm("username")
 	log.Println("username: ", username)
 	userService := service.UserServiceImpl{}
 

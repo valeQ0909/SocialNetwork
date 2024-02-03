@@ -2,15 +2,18 @@
     <div class="post"  @click="postdetail">
         <!--头像、名称区-->
         <div class="avatar_name">
+
             <div class="avatar"  >
                 <img :src="author.avatar" alt="avatar"  @click.stop="personalpage" />
             </div>
-            <div class="name">
-                {{author.username}}
+
+            <div class="name_datetime">
+                <div class="name">{{author.username}}</div>
+                <div class="datetime">{{fmt_publish_time}}</div>
             </div>
-            <div class="datetime">
-                {{fmt_publish_time}}
-            </div>
+
+            <div class="category">{{category}}</div>
+        
         </div>
 
         <!--文章摘要区-->
@@ -170,14 +173,21 @@ export default{
     width: 100%;
     border-radius: 50px;
 }
-.avatar_name .name{
+.avatar_name .name_datetime{
+    float: left;
+}
+.avatar_name .name_datetime .name{
     font-size: 18px;
 }
 
-.avatar_name .datetime{
+.avatar_name .name_datetime .datetime{
     font-size: 12px;
     color: rgba(0, 0, 0, 0.7);
     margin-top: 1vh;
+}
+.avatar_name .category{
+    float:right;
+    margin-right: 1vh;
 }
 
 .summary{

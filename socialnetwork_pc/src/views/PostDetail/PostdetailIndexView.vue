@@ -17,7 +17,10 @@
                     <div class="box-author"><p>{{authorname}}</p></div>
                     <div class="datetime"><p>{{publish_time}}</p></div>
                 </div>
-                <div class="info" v-html="post_html"></div>
+
+                <v-md-preview :text="post_markdown">
+                </v-md-preview>
+
             </div>
             <div class="comment">
                 <div class="box">评论 {{comment_count}}</div>
@@ -28,6 +31,8 @@
                         <div class="btn" @click="sendcomment"><p>发送</p></div>
                     </div>
                 </div>
+
+
                 <Comment v-for="comment in commentlist" :key="comment.id"
                                                         :id="comment.id"
                                                         :post_id="post_id"
@@ -37,6 +42,7 @@
                                                         :publish_time="comment.fmt_publish_time"
                 >
                 </Comment>
+
             </div>
         </div>
 
@@ -100,8 +106,9 @@ export default{
         let publish_time = ref()
         let favorite_count = ref()
         let comment_count = ref()
-        let post_html = ref()
+        let post_markdown = ref("")
         //let category = ref()  以后再加这个功能
+
 
         //comment相关数据、
         let commentlist = ref()
@@ -186,11 +193,14 @@ export default{
                             follow_state.value = "follow"
                             p_follow.value = "关注"
                             is_follow.value = false
+                            follower_cnt.value = follower_cnt.value - 1
                         } else { //如果之前是未关注状态，现在就是关状态
                             follow_state.value = "followed"
                             p_follow.value = "已关注"
                             is_follow.value = true
+                            follower_cnt.value = follower_cnt.value + 1
                         }
+                        
                     }
                 });
         }
@@ -219,7 +229,7 @@ export default{
                     like_cnt.value = resp.data.post.author.like_cnt
                     follower_cnt.value = resp.data.post.author.follower_cnt
 
-                    post_html.value = resp.data.post.post_html
+                    post_markdown.value = resp.data.post.post_markdown
                     // 点赞相关
                     if(resp.data.post.author.is_me == true){  // 这里json解析过后会自动变成bool类型
                         is_me.value = true
@@ -297,7 +307,7 @@ export default{
             publish_time,
             favorite_count,
             comment_count,
-            post_html,
+            post_markdown,
             comment_text,
             commentlist,
             post_id,

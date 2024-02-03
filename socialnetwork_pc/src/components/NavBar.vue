@@ -44,9 +44,9 @@
   
 <script>
 console.log("乘风好去，长空万里，直下看山河。\n斫去桂婆娑，人道是、清光更多。\n                   -- 辛弃疾");
-import {ref, reactive, onMounted } from "vue"
+import {ref, reactive, onMounted} from "vue"
 import { useStore } from 'vuex';
-import { useRouter } from "vue-router";
+import { useRouter} from "vue-router";
 
 export default {
     setup(){
@@ -101,6 +101,8 @@ export default {
         }
         const logout = () => {
           store.dispatch("logout");
+          localStorage.removeItem("avatar")
+          avatar.value = "http://127.0.0.1:3000/static/images/defaultavatar.jpg"
         }
         const getAvatar = () =>{
             avatar.value = localStorage.getItem("avatar");
@@ -120,11 +122,13 @@ export default {
                 theme2.color = "white"
                 theme1.color = "rgb(141, 139, 139)"
             }
+            getAvatar()
         }, 10);
 
         onMounted(()=>{
             getAvatar()
         })
+
 
         return {
             theme1,

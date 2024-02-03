@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"; 
 import router from '../router';
 
 export default {
@@ -50,17 +50,18 @@ export default {
     actions:{
         // 获取信息
         getinfo(context, data){
+            console.log("state user: ", context.state.username)
             axios({
                 headers: {
                   Authorization: context.state.token,
+                  'Content-Type':'application/x-www-form-urlencoded'
                 },
                 method: "POST",
-                data:{
-                    "username": context.state.username
-                },
                 url: context.rootState.backBaseUrl + "/user/info/",
+                data:{
+                    "username": context.state.username,
+                },
             }).then((resp)=>{
-                  console.log("sotre getinfo resp: ", resp)
                   if(resp.data.status_code === 0) {
                       context.commit("updateUser", {
                           ...resp,
@@ -88,7 +89,7 @@ export default {
                   },
                 }).then((resp) => {
                     if (resp.data.status_code === 0) {
-                      console.log("resp: ", resp)
+                      console.log("sotre login resp: ", resp)
                       localStorage.setItem("jwt_token", resp.data.token);
                       localStorage.setItem("avatar", resp.data.user.avatar);
                       context.commit("updateUser", resp.data.user);
@@ -106,7 +107,8 @@ export default {
           logout(context) {
               localStorage.removeItem("jwt_token");
               context.commit("logout");
-              router.push({name: "login_index"});
+              router.replace({name: "login_index"}); //router.push会像histroy栈中加入一条记录，但是replace不会
+              //router.go(0)
           },
     }
 

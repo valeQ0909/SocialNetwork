@@ -8,10 +8,11 @@
                 <li :class="category[2]" @click="chose_category(2)">关注</li>
                 <li :class="category[3]" @click="chose_category(3)">广场</li>
                 <li :class="category[4]" @click="chose_category(4)">树洞</li>
-                <li :class="category[5]" @click="chose_category(5)">二手市场</li>
-                <li :class="category[6]" @click="chose_category(6)">失物招领</li>
-                <li :class="category[7]" @click="chose_category(7)">计算机</li>
-                <li :class="category[8]" @click="chose_category(8)">招聘</li>
+                <li :class="category[5]" @click="chose_category(5)">Golang</li>
+                <li :class="category[6]" @click="chose_category(6)">机器学习</li>
+                <li :class="category[7]" @click="chose_category(7)">深度学习</li>
+                <li :class="category[8]" @click="chose_category(8)">CV</li>
+                <li :class="category[9]" @click="chose_category(9)">NLP</li>
             </ul>
         </div>
 
@@ -53,7 +54,7 @@ export default{
         let category_page = ref()
 
         // 导航栏属性相关
-        let category = ref(["chose_category","","","","","","","",""])
+        let category = ref(["chose_category","","","","","","","","",""])
 
         const getpostlist = () =>{
             let date = new Date();
@@ -78,8 +79,8 @@ export default{
 
         // 导航栏属性相关
         const chose_category = (num) =>{
-            let categoryPage = ["推荐", "热榜", "关注","广场", "树洞", "二手市场", "失物招领", "计算机", "招聘"]
-            for(let i = 0; i < 9; i ++){
+            let categoryPage = ["推荐", "热榜", "关注","广场", "树洞", "Golang", "机器学习", "深度学习", "CV", "NLP"]
+            for(let i = 0; i < 10; i ++){
                 category.value[i] = ""
             }
             category.value[num] = "chose_category"
@@ -130,7 +131,7 @@ export default{
 }
 .page_left{
     width: 10vw;
-    height: 76vh;
+    height: 84vh;
     margin-left: 6vw;
     position: fixed;
     top: 11vh;

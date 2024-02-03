@@ -12,12 +12,18 @@ type PostServiceImpl struct {
 
 // Feed 通过传入时间戳，当前用户的id返回对应的帖子切片数组，以及帖子数组中最早的发布时间
 // 施工ing
-func (psi *PostServiceImpl) Feed(lastTime time.Time, userId int64) ([]FmtPost, error) {
+func (psi *PostServiceImpl) Feed(category string, lastTime time.Time, userId int64) ([]FmtPost, error) {
 	//创建对应返回视频的切片数组，提前将切片的容量设置好，可以减少切片扩容的性能
 	postsList := make([]FmtPost, 0, config.PostCount)
 
-	//根据传入的时间，获得传入时间前n个视频，可以通过config.videoCount来控制
-	posts, err := models.GetPostsByLastTime(lastTime)
+	//根据传入的时间，获得传入时间前n个视频，可以通过config.postCount来控制
+	var posts []models.TablePost
+	var err error
+	if category == "推荐" || category == "热榜" || category == "关注" {
+		posts, err = models.GetPostsByLastTime(lastTime)
+	} else {
+		posts, err = models.GetPostsDescByCategory(category)
+	}
 
 	if err != nil {
 		log.Println("方法Feed获取按时间排序的视频失败: ", err)

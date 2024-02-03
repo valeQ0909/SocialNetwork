@@ -101,11 +101,11 @@
                           success() {
                             store.commit("updatePullingInfo", false);
                             router.push({name:"home_index"});
-                            location.reload(true)
+                          //  location.reload()
                           },
                           error(){
                             store.commit("updatePullingInfo", false);
-                            router.push({name:"home_index"});
+                            router.replace({name:"home_index"});
                           }
                       })                    
                   },

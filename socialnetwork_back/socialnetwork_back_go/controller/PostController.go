@@ -24,13 +24,13 @@ func Feed(c *gin.Context) {
 	tokenIdstr := tokenId.(string) // 这个any必须转换未string，我也不是很懂，留着以后再学
 	userId, _ := strconv.ParseInt(tokenIdstr, 10, 64)
 
-	category := c.PostForm("category") //返回的这个any类型我不是很懂，留着以后再学
+	category := c.PostForm("category")
 	log.Println("category: ", category)
 
 	lastTime := time.Now()
 
 	psi := service.PostServiceImpl{}
-	feed, err := psi.Feed(lastTime, userId)
+	feed, err := psi.Feed(category, lastTime, userId)
 
 	if err != nil {
 		log.Printf("方法postService.Feed(lastTime, userId) 失败：%v", err)
@@ -53,13 +53,13 @@ func SendPost(c *gin.Context) {
 	userId, _ := strconv.ParseInt(tokenIdstr, 10, 64)
 
 	category := c.PostForm("category")
-	postHtml := c.PostForm("post_html")
-	postText := c.PostForm("post_text")
+	postMarkdown := c.PostForm("post_markdown")
+	postText := postMarkdown // 暂时先这么写，后面我会改成从markdown中提取文本内容
 
-	log.Println("postHtml: ", postHtml)
-	log.Println("postText: ", postText)
+	log.Println("postMarkdown: ", postMarkdown)
+
 	psi := service.PostServiceImpl{}
-	err := psi.SendPost(userId, category, postHtml, postText)
+	err := psi.SendPost(userId, category, postMarkdown, postText)
 
 	if err != nil {
 		c.JSON(http.StatusOK, Response{

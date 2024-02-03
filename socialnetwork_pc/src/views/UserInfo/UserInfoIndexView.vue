@@ -11,21 +11,20 @@
             </div>
             <div class="number">
                 <div class="box">
-                    <div class="num"><p>315</p></div>
+                    <div class="num"><p>{{post_cnt}}</p></div>
                     <div class="text"><p>贴子</p></div>
                 </div>
                 <div class="box">
-                    <div class="num"><p>7.3k</p></div>
+                    <div class="num"><p>{{like_cnt}}</p></div>
                     <div class="text"><p>喜欢</p></div>
                 </div>
                 <div class="box">
-                    <div class="num"><p>6.4k</p></div>
+                    <div class="num"><p>{{follower_cnt}}</p></div>
                     <div class="text"><p>粉丝</p></div>
                 </div>
-
             </div>
-            <div class="follow-message">
-                <div class="follow"><p>关注</p></div>
+            <div class="follow-message" v-show="!is_me">
+                <div :class="follow_state" @click="followUser"><p>{{p_follow}}</p></div>
                 <div class="message"><p>私信</p></div>
             </div>
         </div>
@@ -71,6 +70,22 @@ export default{
         const router = useRouter()
         username = router.currentRoute.value.query.username
 
+        let userId = ref()
+
+        // 关注相关
+        let is_me = ref()
+        let is_follow = ref()
+        let p_follow = ref()
+        p_follow.value = "关注"
+        let follow_actionType = 0
+        let follow_state = ref()
+
+        // 用户info相关
+        let post_cnt = ref()
+        let like_cnt = ref()
+        let follower_cnt = ref()
+
+
         const getUserInfo = () => {
             let token = localStorage.getItem("jwt_token")
             axios({
@@ -83,9 +98,24 @@ export default{
                 data: {              
                 'username': username,
                 }                
-            }).then(response => {
-                    avatar.value = response.data.user.avatar
-                    signature.value = response.data.user.signature
+            }).then(resp => {
+                    userId.value = resp.data.user.id
+                    avatar.value = resp.data.user.avatar
+                    signature.value = resp.data.user.signature
+                    is_me.value = resp.data.user.is_me
+                    is_follow.value = resp.data.user.is_follow
+                    post_cnt.value = resp.data.user.post_cnt
+                    like_cnt.value = resp.data.user.like_cnt
+                    follower_cnt.value = resp.data.user.follower_cnt
+                    if(is_follow.value){
+                            follow_state.value = "followed"
+                            p_follow.value = "已关注"
+                            is_follow.value = true
+                    } else {
+                            follow_state.value = "follow"
+                            p_follow.value = "关注"
+                            is_follow.value = false
+                    }
             });
         }
 
@@ -101,11 +131,50 @@ export default{
                 data: {              
                 'username': username,
                 }                
-            }).then(response => {
-                    console.log("response: ", response)
-                    postlist.value = response.data.post_list
+            }).then(resp => {
+                    console.log("response: ", resp)
+                    postlist.value = resp.data.post_list
             });
         }
+
+
+        // 关注用户
+        const followUser = () =>{
+            if(is_follow.value==true){
+                follow_actionType = 1
+            } else {
+                follow_actionType = 0
+            }
+            let token = localStorage.getItem("jwt_token")
+            axios({
+                headers:{
+                    Authorization: token,
+                    'Content-Type':'application/x-www-form-urlencoded'
+                },
+                method: 'POST',
+                url: "http://127.0.0.1:3000/socialnetwork/follow/action/",
+                data: {
+                    "user_id": userId.value,
+                    "action_type": follow_actionType,
+                }
+                }).then(resp => {
+                    console.log("followPoster resp: ", resp)
+                    if(resp.data.status_code == 0){
+                        if(is_follow.value){ //如果之前是关注状态，现在就是未关注状态
+                            follow_state.value = "follow"
+                            p_follow.value = "关注"
+                            is_follow.value = false
+                            follower_cnt.value = follower_cnt.value - 1
+                        } else { //如果之前是未关注状态，现在就是关注状态
+                            follow_state.value = "followed"
+                            p_follow.value = "已关注"
+                            is_follow.value = true
+                            follower_cnt.value = follower_cnt.value + 1
+                        }
+                    }
+                });
+        }
+
 
         onMounted(()=>{
             getUserInfo()
@@ -117,8 +186,17 @@ export default{
             avatar,
             signature,
             username,
+            userId,
+            is_me,
+            is_follow,
+            p_follow,
+            follow_state,
+            post_cnt,
+            like_cnt,
+            follower_cnt,
             getUserInfo,
-            getpostlist
+            getpostlist,
+            followUser
         }
     }
 }
@@ -240,5 +318,63 @@ export default{
     float: left;
     width: 2vw;
     height: 90vh;
+}
+
+.follow-message{
+    width: 100%;
+    height: 100%;
+    margin-top: 1vw;
+    
+}
+.follow-message .follow{
+    float: left;
+    width: 8vw;
+    height: 2.5vw;
+    margin-left: 1vw;
+    font-size: 16px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: white;
+    background-color: rgb(30,128,255);
+}
+.follow-message .followed{
+    float: left;
+    width: 8vw;
+    height: 2.5vw;
+    margin-left: 1vw;
+    font-size: 16px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: rgb(122, 180, 255);
+    background-color: rgb(216, 233, 255);
+}
+.follow-message .follow:hover{
+    background-color: rgb(122, 180, 255);
+}
+.follow-message .followed:hover{
+    background-color: rgb(207, 227, 254);
+}
+.follow-message .message{
+    float: left;
+    width: 8vw;
+    height: 2.5vw;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-left: 2vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    color: rgb(122, 180, 255);
+    background-color: rgb(216, 233, 255);
+}
+.follow-message .message:hover{
+    background-color: rgb(207, 227, 254);
 }
 </style>
